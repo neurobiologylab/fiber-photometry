@@ -1,6 +1,6 @@
 # Multi-color Fiber Photometry
 
-This repository contains code and documentation for a flexible and versatile system for multi-color fiber photometry using GCaMP6s and ChrimsonR. The system is designed to enable researchers to perform high-quality, reliable fiber photometry experiments using a variety of experimental designs.
+This repository contains code and documentation for a flexible and versatile system for multi-color fiber photometry using GCaMP6s and ChrimsonR. The system is designed to enable researchers to perform high-quality, reliable fiber photometry experiments using a variety of experimental designs. 
 
 ## Features
 
@@ -10,15 +10,6 @@ This repository contains code and documentation for a flexible and versatile sys
 - High-quality and reliable data collection
 
 ## Getting Started
-
-
-## Installation
-
-To install this system, follow these steps:
-
-1. Clone the repository to your local machine
-2. Install the required dependencies (list of dependencies here)
-3. Follow the instructions in the documentation to set up and use the system
 
 To order parts and set up hardware, see the parts list below: 
 
@@ -42,6 +33,13 @@ SM1CP2 | Externally SM1-Threaded End Cap | - | 2 | $19.86 | $39.72 USD
 SM1SMA | SMA Fiber Adapter Plate with External SM1 (1.035"-40) Threads | - | 1 | $32.29 | $32.29 USD
 SM2T2 | SM2 (2.035"-40) Coupler, External Threads, 1/2" Long | - | 1 | $39
 
+## Installation
+
+Once hardware is set up, install the system by following steps:
+
+1. Clone the repository to your local machine
+2. Install the required dependencies (list of dependencies here)
+3. Follow the instructions in the documentation to set up and use the system
 
 ## Usage
 
