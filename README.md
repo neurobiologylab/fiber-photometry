@@ -79,17 +79,29 @@ Once hardware is set up, install the system by following steps:
 
 ## LabView
 1. Create a blank VI by clicking on the block diagram (blank white background without grid), and right-click to open the functions palette: Measurement I/O > Daqmx data acquisition > daq assistant.
-   ![LabView DAQ Assistant](./images/labview_DAQ_Assistant.jpg)
+
+   <img src="./images/labview_DAQ_assistant.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+
 2. Choose "Generate Signal" and "Analog Output Voltage" in the DAQ assistant.
-   ![LabView DAQ Analog Input](./images/labview_DAQ_analog_input.jpg)
+
+   <img src="./images/labview_DAQ_assistant.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+
 3. Verify that AO 0 through AO 3 are selected channels.
-   ![LabView DAQ Channels](./images/labview_DAQ_channels.jpg)
+
+   <img src="./images/labview_DAQ_channels.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+
 4. Click "OK" and wait for the VI to build (this may take a few seconds).
-   ![LabView DAQ OK](./images/labview_DAQ_ok.jpg)
+
+   <img src="./images/labview_DAQ_ok.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+
 5. Open the `glynnfip.vi` file.
-   ![LabView Glynnfip](./images/labview_Glynnfip.jpg)
+
+   <img src="./images/labview_Glynnfip.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+
 6. Configure the settings for the `glynnfip.vi`.
-   ![LabView Glynnfip Settings](./images/labview_Glynnfip_setting.jpg)
+
+   <img src="./images/labview_Glynnfip_setting.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+
 7. Click the "Run" button to start the execution.
 
 ## Notation
