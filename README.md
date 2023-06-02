@@ -72,29 +72,36 @@ Once hardware is set up, install the system by following steps:
 3. Follow the instructions in the documentation to set up and use the system
 
 ## Python App
-1. Open the repository and run main.py
-2. Click "New" and set the folder for data storage
-3. Click "Set Parameters" and select region of interest
-4. Click Plot and Record.
+1. Open the repository and execute the `main.py` script.
+2. Click on "New" to specify the folder for data storage.
+3. Select "Set Parameters" to choose the region of interest.
+4. Click on "Plot" and "Record" to start recording.
 
 ## LabView
-1. Create blank VI ==> click on block diagram(blank white background not grid) ==> right click to open functions palette: Measurement I/O > Daqmx data acquisition > daq assistant ==> Put daq assistant in block diagram and wait for popup.
-![](./images/labview_DAQ_Assistant.jpg)
-2. Select generate signal and analog output voltage
-![](./images/labview_DAQ_analog_input.jpg)
-3. check that ao 0 through ao 3 are selected channels
-![](./images/labview_DAQ_channels.jpg)
-4. Click OK and wait for it to build VI(takes a few second to load)
-![](./images/labview_DAQ_ok.jpg)
-5. Open glynnfip.vi
-![](./images/labview_Glynnfip.jpg)
-6. set the glynnfip.vi
-![](./images/labview_Glynnfip_setting.jpg)
-7. Click the run button
+1. Create a blank VI by clicking on the block diagram (blank white background without grid), and right-click to open the functions palette: Measurement I/O > Daqmx data acquisition > daq assistant.
+   ![LabView DAQ Assistant](./images/labview_DAQ_Assistant.jpg)
+2. Choose "Generate Signal" and "Analog Output Voltage" in the DAQ assistant.
+   ![LabView DAQ Analog Input](./images/labview_DAQ_analog_input.jpg)
+3. Verify that AO 0 through AO 3 are selected channels.
+   ![LabView DAQ Channels](./images/labview_DAQ_channels.jpg)
+4. Click "OK" and wait for the VI to build (this may take a few seconds).
+   ![LabView DAQ OK](./images/labview_DAQ_ok.jpg)
+5. Open the `glynnfip.vi` file.
+   ![LabView Glynnfip](./images/labview_Glynnfip.jpg)
+6. Configure the settings for the `glynnfip.vi`.
+   ![LabView Glynnfip Settings](./images/labview_Glynnfip_setting.jpg)
+7. Click the "Run" button to start the execution.
 
 ## Notation
-For every expeiment, open and run Python app first, and then run LabView app to make sure record will start at original. 
-Before starting a new experiment(recording), remember to stop the glynnfip.vi app (click the Stop button) and set all offsets and amplitudes to 2.5 and click run for a while and click then stop the  glynnfip.vi app, this is aim to reinitialize the glynnfip.vi app to the original point. After reinitialize the glynnfip.vi, start the python app first (step 1 to 4), and then click the run button on window of glynnfip.vi
+Before starting each experiment, ensure that you run the Python app first and then the LabView app to synchronize the recording process. 
+Before commencing a new experiment (recording), it is important to follow these steps:
+
+1. Stop the `glynnfip.vi` app by clicking the "Stop" button.
+2. Set all offsets and amplitudes to 0 in the `glynnfip.vi` app.
+3. Run the `glynnfip.vi` app for a short period and then stop it. This aims to reinitialize `glynnfip.vi` to the original state.
+4. After reinitializing the `glynnfip.vi` app, set all offsets and amplitudes to 2.5.
+5. Start the Python app by following steps 1 to 4 for recording.
+6. Click the "Run" button in the `glynnfip.vi` window to begin data acquisition.
 
 ## Usage
 
