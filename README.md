@@ -41,3 +41,13 @@ Contributions to this project are welcome and encouraged. To contribute, please 
 ## License
 
 This project is licensed under the [MIT License](https://opensource.org/licenses/MIT). See the [LICENSE](LICENSE) file for details.
+
+
+
+
+
+        Open the Start Menu and search Turn Windows features on or off
+        Select Windows Subsystem for Linux
+        Click OK
+        Restart your computer when prompted
+

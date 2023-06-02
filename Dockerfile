@@ -1,5 +1,6 @@
 FROM jupyter/datascience-notebook:ubuntu-22.04
-
+sudo apt-get install libxcb-xinerama0
+RUN pip install --upgrade setuptools
 COPY requirements.txt /tmp/
 RUN pip install --requirement /tmp/requirements.txt
 

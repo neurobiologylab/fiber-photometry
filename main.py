@@ -19,7 +19,7 @@ import time
 import datetime
 import os
 import csv
-import PySpin
+import pyspin as PySpin
 from PIL import Image
 import nidaqmx
 from nidaqmx.constants import AcquisitionType
@@ -31,7 +31,8 @@ from parameter_window import ParameterWindow
 uiclass, baseclass = pg.Qt.loadUiType("main.ui")
 # If changes are made in QtDesigner, open cmd in main.ui folder and execute:
 # pyside2-uic main.ui -o MainWindow.py
-
+#connector 0: ao0 camera, ao1 405 (on labview channels 1,2) 
+#connector 1: ao0 470, ao1 625 (on labview channels 3,4)
 
 class GUI(QMainWindow):
     def __init__(self, parent=None):
@@ -455,7 +456,7 @@ class FLIRAcquisitionWorker(QtCore.QThread):
                 return False
 
             # Ensure desired exposure time does not exceed the maximum this is in us so 50 ms
-            exposure_time_to_set = 50000.0
+            exposure_time_to_set = 30000.0
             exposure_time_to_set = min(cam.ExposureTime.GetMax(), exposure_time_to_set)
             cam.ExposureTime.SetValue(exposure_time_to_set)
             print('Shutter time set to %s us...\n' % exposure_time_to_set)
@@ -463,11 +464,7 @@ class FLIRAcquisitionWorker(QtCore.QThread):
         except PySpin.SpinnakerException as ex:
             print('Error: %s' % ex)
             result = False
-
         return result
-
-
-
     def acquire_images(self, cam, nodemap, nodemap_tldevice):
 
         print('*** IMAGE ACQUISITION ***\n')
@@ -553,8 +550,8 @@ class FLIRAcquisitionWorker(QtCore.QThread):
 
                         #  Release image
                         image_result.Release()
-                        i += 1                
-                ctr_task.stop()
+                        # i += 1                
+                # ctr_task.stop()
             cam.EndAcquisition()
 
         except PySpin.SpinnakerException as ex:
