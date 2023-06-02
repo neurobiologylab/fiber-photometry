@@ -80,11 +80,11 @@ Once hardware is set up, install the system by following steps:
 ## LabView
 1. Create a blank VI by clicking on the block diagram (blank white background without grid), and right-click to open the functions palette: Measurement I/O > Daqmx data acquisition > daq assistant.
 
-   <img src="./images/labview_DAQ_assistant.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./images/labview_DAQ_Assistant.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 2. Choose "Generate Signal" and "Analog Output Voltage" in the DAQ assistant.
 
-   <img src="./images/labview_DAQ_assistant_input.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./images/labview_DAQ_analog_input.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 3. Verify that AO 0 through AO 3 are selected channels.
 
