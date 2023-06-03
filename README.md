@@ -104,16 +104,34 @@ Once hardware is set up, install the system by following steps:
 
 7. Click the "Run" button to start the execution.
 
-## Notation
-Before starting each experiment, ensure that you run the Python app first and then the LabView app to synchronize the recording process. 
-Before commencing a new experiment (recording), it is important to follow these steps:
+## Important Notes
 
-1. Stop the `glynnfip.vi` app by clicking the "Stop" button.
-2. Set all offsets and amplitudes to 0 in the `glynnfip.vi` app.
-3. Run the `glynnfip.vi` app for a short period and then stop it. This aims to reinitialize `glynnfip.vi` to the original state.
-4. After reinitializing the `glynnfip.vi` app, set all offsets and amplitudes to 2.5.
-5. Start the Python app by following steps 1 to 4 for recording.
-6. Click the "Run" button in the `glynnfip.vi` window to begin data acquisition.
+Before initiating each experiment, it is crucial to follow these steps in the specified order to ensure proper synchronization of the recording process:
+
+1. Run the Python app first and then launch the LabView app.
+2. Make sure to perform the following steps before starting a new experiment (recording):
+
+   a. Move all images in the "data/images" folder under the Python app to a separate location designated for storing the experiment data. Ensure that the "data/images" folder is empty.
+   
+   b. Click the "Stop" button in the `glynnfip.vi` app to halt the data acquisition.
+   
+   c. Set all offsets and amplitudes to 0 within the `glynnfip.vi` app.
+   
+   d. Run the `glynnfip.vi` app for a brief period and then stop it. This step is essential for reinitializing the `glynnfip.vi` app to its original state.
+   
+   e. After reinitializing the `glynnfip.vi` app, set all offsets and amplitudes to 2.5.
+   
+3. Start the Python app by following steps 1 to 4 for the recording process.
+4. Click the "Run" button in the `glynnfip.vi` window to initiate data acquisition.
+
+Please note that if the window for selecting the region of interest appears too small and prevents you from performing any actions (due to a potential bug in the OpenCV package), you can try the following:
+
+1. Press the spacebar on your keyboard to trigger a response.
+2. Click the "Submit" button.
+3. Reclick to choose the desired region of interest.
+
+If the issue persists, consider closing and restarting the Python app or restarting your machine as possible solutions.
+
 
 ## Usage
 
