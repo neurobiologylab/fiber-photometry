@@ -11,7 +11,7 @@ from PySide2.QtGui import QPixmap
 from ParameterWindowTemp import Ui_ParameterWindow
 import numpy as np
 import cv2
-import pyspin as PySpin
+import PySpin
 import sys
 import os
 import copy

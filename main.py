@@ -19,7 +19,7 @@ import time
 import datetime
 import os
 import csv
-import pyspin as PySpin
+import PySpin
 from PIL import Image
 import nidaqmx
 from nidaqmx.constants import AcquisitionType
