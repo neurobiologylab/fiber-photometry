@@ -180,9 +180,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"dF/F Signal", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"470nm (Normalized)", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"405nm (Normalized)", None))
-        self.label_6.setText(QCoreApplication.translate("MainWindow", u"590nm (Normalized)", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"470nm", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"405nm", None))
+        self.label_6.setText(QCoreApplication.translate("MainWindow", u"590nm", None))
         self.NewButton.setText(QCoreApplication.translate("MainWindow", u"New", None))
         self.SetParametersButton.setText(QCoreApplication.translate("MainWindow", u"Set Parameters", None))
         self.PlotButton.setText(QCoreApplication.translate("MainWindow", u"Plot", None))

@@ -14,6 +14,7 @@ from MainWindow import Ui_MainWindow
 import sys
 import pyqtgraph as pg
 import numpy as np
+import pandas as pd
 from collections import deque
 import time
 import datetime
@@ -110,7 +111,7 @@ class GUI(QMainWindow):
         x1_axis = self.plot_filtered_signal.getAxis("bottom")
         x1_axis.setLabel(text="Time since start (s)")
         y1_axis = self.plot_filtered_signal.getAxis("left")
-        y1_axis.setLabel(text="Intensity")
+        y1_axis.setLabel(text="Z-score")
         # self.plot_filtered_signal.setYRange(-5,5)
         self.plot_filtered_signal.setYRange(-6,6)
 
@@ -143,7 +144,7 @@ class GUI(QMainWindow):
         x4_axis = self.plot_590.getAxis("bottom")
         x4_axis.setLabel(text = "Time since start (s)")
         y4_axis = self.plot_590.getAxis("left")
-        y4_axis.setLabel(text = "Z-score")
+        y4_axis.setLabel(text = "Intensity")
         #set plot line color to orange
         self.pen_590 = pg.mkPen(color =(255, 140, 0))
         self.plot_590.setYRange(-6,6)
@@ -153,7 +154,7 @@ class GUI(QMainWindow):
 
     def signal_identify(self, s1, s2, s3, t1, t2, t3):
         # Calculate the mean values of s1, s2, and s3
-        mean_values = [sum(l) / len(l) for l in [s1, s2, s3]]
+        mean_values = [sum(l) / len(l) for l in [s1, s2, s3] if len(l)>0]
 
         # Combine the lists using zip
         combined_data = list(zip(mean_values, [s1, s2, s3], [t1, t2, t3]))
@@ -202,40 +203,47 @@ class GUI(QMainWindow):
                 #     self.norm_plot_590 = (
                 #         self.deque_plot_590 - self.mu_590
                 #     )/self.std_590
-            dic = {"time_405":[],"time_470":[],"time_590":[],"intensity_405":[],"intensity_470":[],"intensity_590":[]}
-            [dic["intensity_590"],dic["intensity_405"],dic["intensity_470"]],[dic["time_590"],dic["time_405"],dic["time_470"]] = self.signal_identify(self.deque_plot_405,self.deque_plot_470,self.deque_plot_590,self.deque_plot_timestamp_405,self.deque_plot_timestamp_470,self.deque_plot_timestamp_590)
-    
-            # Clear the data from the previous update off of the plot
-            self.plot_405.plotItem.clear()
-            # Plot the data
-            self.plot_405.plotItem.plot(
-                dic['time_405'],
-                dic['intensity_405'],
-                pen=self.pen_405,
-            )
-            self.plot_470.plotItem.clear()
-            self.plot_470.plotItem.plot(
-                dic['time_470'],
-                dic['intensity_470'],
-                pen=self.pen_470,
-            )
-            self.plot_590.plotItem.clear()
-            self.plot_590.plotItem.plot(
-                dic['time_590'],
-                dic['intensity_590'],
-                pen = self.pen_590,
-            )
-            self.iterator +=1
-            if self.iterator > 1 and self.iterator % 3 == 0:
-                self.plot_filtered_signal.plotItem.clear()
-                # Filter out noise from 470 signal by subtracting 405 signal                
-                calibrated_470 = dic['intensity_470'] - dic['intensity_405']
-                self.filtered_signal  = zscore(calibrated_470)
-                self.plot_filtered_signal.plotItem.plot(
+            if self.iterator > 1: 
+                dic = {"time_405":[],"time_470":[],"time_590":[],"intensity_405":[],"intensity_470":[],"intensity_590":[]}
+                [dic["intensity_590"],dic["intensity_405"],dic["intensity_470"]],[dic["time_590"],dic["time_405"],dic["time_470"]]  = self.signal_identify(self.deque_plot_405,self.deque_plot_470,self.deque_plot_590,self.deque_plot_timestamp_405,self.deque_plot_timestamp_470,self.deque_plot_timestamp_590)
+                
+                # Clear the data from the previous update off of the plot
+                self.plot_405.plotItem.clear()
+                # Plot the data
+                self.plot_405.plotItem.plot(
                     dic['time_405'],
-                    self.filtered_signal,
-                    pen=self.pen_filtered_signal,
+                    dic['intensity_405'],
+                    pen=self.pen_405,
                 )
+                self.plot_470.plotItem.clear()
+                self.plot_470.plotItem.plot(
+                    dic['time_470'],
+                    dic['intensity_470'],
+                    pen=self.pen_470,
+                )
+                self.plot_590.plotItem.clear()
+                self.plot_590.plotItem.plot(
+                    dic['time_590'],
+                    dic['intensity_590'],
+                    pen = self.pen_590,
+                )
+                if self.iterator % 3 == 0:
+                    dic_len = min(len(dic['time_405']),len(dic['time_470']))
+                    # print(len(img_plot_deque))
+                    dic['time_405'] = list(dic['time_405'])[:dic_len]
+                    dic['intensity_405'] = list(dic['intensity_405'])[:dic_len]
+                    dic['time_470'] = list(dic['time_470'])[:dic_len]
+                    dic['intensity_470'] = list(dic['intensity_470'])[:dic_len]
+                    df=pd.DataFrame(dic).astype({'intensity_405': 'float','intensity_470': 'float'})
+                    df["calibrated_470"] = df["intensity_470"]-df["intensity_405"]
+                    df["normalized_470"] = zscore(df["calibrated_470"])
+                    self.plot_filtered_signal.plotItem.clear()
+                    self.plot_filtered_signal.plotItem.plot(
+                        dic['time_470'],
+                        df["calibrated_470"],
+                        pen=self.pen_filtered_signal,
+                    )
+            self.iterator +=1
 
 
     def new(self):

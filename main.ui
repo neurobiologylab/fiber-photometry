@@ -98,7 +98,7 @@
             </font>
            </property>
            <property name="text">
-            <string>470nm (Normalized)</string>
+            <string>470nm</string>
            </property>
           </widget>
          </item>
@@ -125,7 +125,7 @@
             </font>
            </property>
            <property name="text">
-            <string>405nm (Normalized)</string>
+            <string>405nm</string>
            </property>
           </widget>
          </item>
