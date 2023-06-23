@@ -21,6 +21,7 @@ import os
 import csv
 import PySpin
 from PIL import Image
+from scipy.stats import zscore
 import nidaqmx
 from nidaqmx.constants import AcquisitionType
 from pathlib import Path, PureWindowsPath
@@ -96,9 +97,9 @@ class GUI(QMainWindow):
         the data will be passed into the plot deque, which is used for 
         computation and plotting
         """
-        self.deque_plot_timestamp0 = deque([], maxlen=self.graph_lim)
-        self.deque_plot_timestamp1 = deque([], maxlen=self.graph_lim)
-        self.deque_plot_timestamp2 = deque([], maxlen=self.graph_lim)
+        self.deque_plot_timestamp_405 = deque([], maxlen=self.graph_lim)
+        self.deque_plot_timestamp_470 = deque([], maxlen=self.graph_lim)
+        self.deque_plot_timestamp_590 = deque([], maxlen=self.graph_lim)
         self.deque_plot_470 = deque([], maxlen=self.graph_lim)
         self.deque_plot_405 = deque([], maxlen=self.graph_lim)
         self.deque_plot_590 = deque([], maxlen=self.graph_lim)
@@ -109,7 +110,7 @@ class GUI(QMainWindow):
         x1_axis = self.plot_filtered_signal.getAxis("bottom")
         x1_axis.setLabel(text="Time since start (s)")
         y1_axis = self.plot_filtered_signal.getAxis("left")
-        y1_axis.setLabel(text="Z-score")
+        y1_axis.setLabel(text="Intensity")
         # self.plot_filtered_signal.setYRange(-5,5)
         self.plot_filtered_signal.setYRange(-6,6)
 
@@ -121,7 +122,7 @@ class GUI(QMainWindow):
         x2_axis = self.plot_470.getAxis("bottom")
         x2_axis.setLabel(text="Time since start (s)")
         y2_axis = self.plot_470.getAxis("left")
-        y2_axis.setLabel(text="Z-score")
+        y2_axis.setLabel(text="Intensity")
         # Set plot line color to blue
         self.pen_470 = pg.mkPen(color=(0, 0, 255))
         self.plot_470.setYRange(-6,6)
@@ -131,7 +132,7 @@ class GUI(QMainWindow):
         x3_axis = self.plot_405.getAxis("bottom")
         x3_axis.setLabel(text="Time since start (s)")
         y3_axis = self.plot_405.getAxis("left")
-        y3_axis.setLabel(text="Z-score")
+        y3_axis.setLabel(text="Intensity")
         # Set plot line color to purple
         self.pen_405 = pg.mkPen(color=(255, 0, 255))
         self.plot_405.setYRange(-6,6)
@@ -150,84 +151,88 @@ class GUI(QMainWindow):
 
         self.show()
 
+    def signal_identify(self, s1, s2, s3, t1, t2, t3):
+        # Calculate the mean values of s1, s2, and s3
+        mean_values = [sum(l) / len(l) for l in [s1, s2, s3]]
+
+        # Combine the lists using zip
+        combined_data = list(zip(mean_values, [s1, s2, s3], [t1, t2, t3]))
+
+        # Sort the combined data based on the mean values
+        sorted_data = sorted(combined_data, key=lambda x: x[0])
+
+        # Separate the sorted data into individual lists
+        sorted_mean_values, sorted_sequences, sorted_times = zip(*sorted_data)
+        return sorted_sequences, sorted_times
 
     def update_plot(self):
         # Only update if deques are not empty
         if img_plot_deque:
+            if self.iterator == 0:
+                self.t0 = time.perf_counter()
+            t, img = img_plot_deque.popleft()
+            t = t - self.t0
+            img = img[self.ui.roi_xmin:self.ui.roi_xmax, self.ui.roi_ymin:self.ui.roi_ymax]
             if self.iterator % 3 == 0:
-                t, img = img_plot_deque.popleft()
-                ### Temp ### 
-                if self.iterator == 0:
-                    self.t0 = time.perf_counter()
-                t = t - self.t0
-                img = img[self.ui.roi_xmin:self.ui.roi_xmax, self.ui.roi_ymin:self.ui.roi_ymax]
-                self.deque_plot_timestamp0.append(t)
-                self.deque_plot_405.append(np.average(img))
+                self.deque_plot_timestamp_405.append(t)
+                self.deque_plot_405.append(np.sum(img))
                 # Calculate mean (mu) and standard deviation (std)
                 self.mu_405 = np.average(self.deque_plot_405)
-                self.std_405 = np.std(self.deque_plot_405)
+                # self.std_405 = np.std(self.deque_plot_405)
                 # Normalize the data (first std is zero, just ignore the error)
-                if self.std_405 > 0:
-                    self.norm_plot_405 = (
-                        self.deque_plot_405 - self.mu_405
-                    ) / self.std_405 
-                    # Clear the data from the previous update off of the plot
-                    self.plot_405.plotItem.clear()
-                    # Plot the data
-                    self.plot_405.plotItem.plot(
-                        self.deque_plot_timestamp0,
-                        self.norm_plot_405,
-                        pen=self.pen_405,
-                    )
-                self.iterator += 1
+                # if self.std_405 > 0:
+                #     self.norm_plot_405 = (
+                #         self.deque_plot_405 - self.mu_405
+                #     ) / self.std_405 
             elif self.iterator % 3 == 1:
-                t, img = img_plot_deque.popleft()
-                t = t - self.t0
-                img = img[self.ui.roi_xmin:self.ui.roi_xmax, self.ui.roi_ymin:self.ui.roi_ymax]
-                self.deque_plot_timestamp1.append(t)
-                self.deque_plot_470.append(np.average(img))
+                self.deque_plot_timestamp_470.append(t)
+                self.deque_plot_470.append(np.sum(img))
                 self.mu_470 = np.average(self.deque_plot_470)
-                self.std_470 = np.std(self.deque_plot_470)
-                if self.std_470 > 0:
-                    self.norm_plot_470 = (
-                        self.deque_plot_470 - self.mu_470
-                    ) / self.std_470
-                    self.plot_470.plotItem.clear()
-                    self.plot_470.plotItem.plot(
-                        self.deque_plot_timestamp1,
-                        self.norm_plot_470,
-                        pen=self.pen_470,
-                    )
-                self.iterator += 1
+                # self.std_470 = np.std(self.deque_plot_470)
+                # if self.std_470 > 0:
+                #     self.norm_plot_470 = (
+                #         self.deque_plot_470 - self.mu_470
+                #     ) / self.std_470
             else: #self.iterator % 3 = 2
-                t, img = img_plot_deque.popleft()
-                t = t-self.t0
-                img = img[self.ui.roi_xmin:self.ui.roi_xmax, self.ui.roi_ymin:self.ui.roi_ymax]
-                self.deque_plot_timestamp2.append(t)
+                self.deque_plot_timestamp_590.append(t)
                 self.deque_plot_590.append(np.average(img))
-                self.mu_590 = np.average(self.deque_plot_590)
-                self.std_590 = np.std(self.deque_plot_590)
-                if self.std_590 > 0:
-                    self.norm_plot_590 = (
-                        self.deque_plot_590 - self.mu_590
-                    )/self.std_590
-                    self.plot_590.plotItem.clear()
-                    self.plot_590.plotItem.plot(
-                        self.deque_plot_timestamp2,
-                        self.norm_plot_590,
-                        pen = self.pen_590,
-                    )
-                self.iterator +=1
-            if self.iterator > 1 and (
-                self.iterator % 3 == 0 and
-                self.std_405 > 0 and 
-                self.std_470 > 0
-            ):
+                # self.mu_590 = np.average(self.deque_plot_590)
+                # self.std_590 = np.std(self.deque_plot_590)
+                # if self.std_590 > 0:
+                #     self.norm_plot_590 = (
+                #         self.deque_plot_590 - self.mu_590
+                #     )/self.std_590
+            dic = {"time_405":[],"time_470":[],"time_590":[],"intensity_405":[],"intensity_470":[],"intensity_590":[]}
+            [dic["intensity_590"],dic["intensity_405"],dic["intensity_470"]],[dic["time_590"],dic["time_405"],dic["time_470"]] = self.signal_identify(self.deque_plot_405,self.deque_plot_470,self.deque_plot_590,self.deque_plot_timestamp_405,self.deque_plot_timestamp_470,self.deque_plot_timestamp_590)
+    
+            # Clear the data from the previous update off of the plot
+            self.plot_405.plotItem.clear()
+            # Plot the data
+            self.plot_405.plotItem.plot(
+                dic['time_405'],
+                dic['intensity_405'],
+                pen=self.pen_405,
+            )
+            self.plot_470.plotItem.clear()
+            self.plot_470.plotItem.plot(
+                dic['time_470'],
+                dic['intensity_470'],
+                pen=self.pen_470,
+            )
+            self.plot_590.plotItem.clear()
+            self.plot_590.plotItem.plot(
+                dic['time_590'],
+                dic['intensity_590'],
+                pen = self.pen_590,
+            )
+            self.iterator +=1
+            if self.iterator > 1 and self.iterator % 3 == 0:
                 self.plot_filtered_signal.plotItem.clear()
-                # Filter out noise from 470 signal by subtracting 405 signal
-                self.filtered_signal = self.norm_plot_470 - self.norm_plot_405
+                # Filter out noise from 470 signal by subtracting 405 signal                
+                calibrated_470 = dic['intensity_470'] - dic['intensity_405']
+                self.filtered_signal  = zscore(calibrated_470)
                 self.plot_filtered_signal.plotItem.plot(
-                    self.deque_plot_timestamp0,
+                    dic['time_405'],
                     self.filtered_signal,
                     pen=self.pen_filtered_signal,
                 )
