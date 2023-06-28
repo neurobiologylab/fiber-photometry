@@ -80,27 +80,27 @@ Once hardware is set up, install the system by following steps:
 ## LabView
 1. Create a blank VI by clicking on the block diagram (blank white background without grid), and right-click to open the functions palette: Measurement I/O > Daqmx data acquisition > daq assistant.
 
-   <img src="./images/labview_DAQ_Assistant.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_DAQ_Assistant.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 2. Choose "Generate Signal" and "Analog Output Voltage" in the DAQ assistant.
 
-   <img src="./images/labview_DAQ_analog_input.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_DAQ_analog_input.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 3. Verify that AO 0 through AO 3 are selected channels.
 
-   <img src="./images/labview_DAQ_channels.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_DAQ_channels.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 4. Click "OK" and wait for the VI to build (this may take a few seconds).
 
-   <img src="./images/labview_DAQ_ok.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_DAQ_ok.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 5. Open the `glynnfip.vi` file.
 
-   <img src="./images/labview_Glynnfip.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_Glynnfip.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 6. Configure the settings for the `glynnfip.vi`.
 
-   <img src="./images/labview_Glynnfip_setting.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_Glynnfip_setting.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 7. Click the "Run" button to start the execution.
 
