@@ -11,7 +11,7 @@ This repository contains code and documentation for a flexible and versatile sys
 
 ## Getting Started
 
-To order parts and set up hardware, see the parts list below: 
+<!-- To order parts and set up hardware, see the parts list below: 
 
 | Item Number | Description | ECCN | Quantity | Price Each | Amount |
 |-------------|-----------------------------------------------------------------------------------------------------------|------|----------|------------|------------|
@@ -60,7 +60,7 @@ To order parts and set up hardware, see the parts list below:
 | XCL         | Stereotaxic Cannula Holder, Ø1.25 mm Ferrules                                                           | -    | 1        | $358.64    | $358.64    |
 | XCF         | Stereotaxic Cannula Holder, Ø2.5 mm Ferrules                                                            | -    | 1        | $358.64    | $358.64    |
 | ADAL1-5     | Ceramic Split Mating Sleeves for Ø1.25 mm (LC/PC) Ferrules, 5 Pack                                        | -    | 10       | $20.96     | $209.60    |
-| ADAF1-5     | Ceramic Split Mating Sleeves for Ø2.5 mm (FC/PC, ST/PC, or SC/PC) Ferrules, 5 Pack                          | -    | 10       | $23.27     | $232.70    |
+| ADAF1-5     | Ceramic Split Mating Sleeves for Ø2.5 mm (FC/PC, ST/PC, or SC/PC) Ferrules, 5 Pack                          | -    | 10       | $23.27     | $232.70    | -->
 
 
 ## Installation
@@ -80,27 +80,27 @@ Once hardware is set up, install the system by following steps:
 ## LabView
 1. Create a blank VI by clicking on the block diagram (blank white background without grid), and right-click to open the functions palette: Measurement I/O > Daqmx data acquisition > daq assistant.
 
-   <img src="./images/labview_DAQ_Assistant.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_DAQ_Assistant.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 2. Choose "Generate Signal" and "Analog Output Voltage" in the DAQ assistant.
 
-   <img src="./images/labview_DAQ_analog_input.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_DAQ_analog_input.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 3. Verify that AO 0 through AO 3 are selected channels.
 
-   <img src="./images/labview_DAQ_channels.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_DAQ_channels.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 4. Click "OK" and wait for the VI to build (this may take a few seconds).
 
-   <img src="./images/labview_DAQ_ok.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_DAQ_ok.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 5. Open the `glynnfip.vi` file.
 
-   <img src="./images/labview_Glynnfip.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_Glynnfip.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 6. Configure the settings for the `glynnfip.vi`.
 
-   <img src="./images/labview_Glynnfip_setting.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/labview_Glynnfip_setting.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 7. Click the "Run" button to start the execution.
 
