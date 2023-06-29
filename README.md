@@ -11,7 +11,7 @@ This repository contains code and documentation for a flexible and versatile sys
 
 ## Getting Started
 
-To order parts and set up hardware, see the parts list below: 
+<!-- To order parts and set up hardware, see the parts list below: 
 
 | Item Number | Description | ECCN | Quantity | Price Each | Amount |
 |-------------|-----------------------------------------------------------------------------------------------------------|------|----------|------------|------------|
@@ -60,7 +60,7 @@ To order parts and set up hardware, see the parts list below:
 | XCL         | Stereotaxic Cannula Holder, Ø1.25 mm Ferrules                                                           | -    | 1        | $358.64    | $358.64    |
 | XCF         | Stereotaxic Cannula Holder, Ø2.5 mm Ferrules                                                            | -    | 1        | $358.64    | $358.64    |
 | ADAL1-5     | Ceramic Split Mating Sleeves for Ø1.25 mm (LC/PC) Ferrules, 5 Pack                                        | -    | 10       | $20.96     | $209.60    |
-| ADAF1-5     | Ceramic Split Mating Sleeves for Ø2.5 mm (FC/PC, ST/PC, or SC/PC) Ferrules, 5 Pack                          | -    | 10       | $23.27     | $232.70    |
+| ADAF1-5     | Ceramic Split Mating Sleeves for Ø2.5 mm (FC/PC, ST/PC, or SC/PC) Ferrules, 5 Pack                          | -    | 10       | $23.27     | $232.70    | -->
 
 
 ## Installation
