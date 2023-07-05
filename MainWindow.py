@@ -172,7 +172,7 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName(u"statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-        self.retranslateUi(MainWindow)
+        # self.retranslateUi(MainWindow)
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
@@ -180,9 +180,9 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.label_3.setText(QCoreApplication.translate("MainWindow", u"dF/F Signal", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"470nm", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"405nm", None))
-        self.label_6.setText(QCoreApplication.translate("MainWindow", u"590nm", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"channel1", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"channel2", None))
+        self.label_6.setText(QCoreApplication.translate("MainWindow", u"channel3", None))
         self.NewButton.setText(QCoreApplication.translate("MainWindow", u"New", None))
         self.SetParametersButton.setText(QCoreApplication.translate("MainWindow", u"Set Parameters", None))
         self.PlotButton.setText(QCoreApplication.translate("MainWindow", u"Plot", None))
