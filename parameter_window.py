@@ -32,6 +32,8 @@ class ParameterWindow(QMainWindow):
         self.roi_btn = self.findChild(QPushButton, "ROIButton")
         self.img_display = self.findChild(QLabel, "imageDisplay")
         self.buttonBox = self.findChild(QDialogButtonBox, "buttonBox")
+        # # self.buttonBox.hide()
+        # self.update_img_btn.hide()
 
         self.update_img_btn.clicked.connect(self.update_img)
         self.roi_btn.clicked.connect(self.roi)
@@ -147,9 +149,11 @@ class ParameterWindow(QMainWindow):
                     print('Image incomplete with image status %d ...' % image_result.GetImageStatus())
 
                 else:
-                    img = image_result.Convert(PySpin.PixelFormat_Mono8, PySpin.HQ_LINEAR)
-                    self.image = np.array(img.GetData(), dtype="uint8").reshape((img.GetHeight(), img.GetWidth()))
-                    image_result.Release()
+                    # img = image_result.Convert(PySpin.PixelFormat_Mono8, PySpin.HQ_LINEAR)
+                    # self.image = np.array(img.GetData(), dtype="uint8").reshape((imgpip.GetHeight(), img.GetWidth()))
+                    # image_result.Release()
+                    image_data = image_result.GetNDArray()
+
 
             except PySpin.SpinnakerException as ex:
                 print('Error: %s' % ex)
