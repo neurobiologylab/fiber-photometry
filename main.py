@@ -104,6 +104,8 @@ class GUI(QMainWindow):
         self.deque_plot_470 = deque([], maxlen=self.graph_lim)
         self.deque_plot_405 = deque([], maxlen=self.graph_lim)
         self.deque_plot_590 = deque([], maxlen=self.graph_lim)
+        self.deque_plot_diff = deque([], maxlen=self.graph_lim)
+        self.current_470, self.current_405 = 0, 0
 
         # Get pyqtgraph plot widgets from main window and set labels
         # Top plot
@@ -166,84 +168,69 @@ class GUI(QMainWindow):
         sorted_mean_values, sorted_sequences, sorted_times = zip(*sorted_data)
         return sorted_sequences, sorted_times
 
-    def update_plot(self):
-        # Only update if deques are not empty
+    def update_plot(self):        
         if img_plot_deque:
+            t, img = img_plot_deque.popleft()
             if self.iterator == 0:
                 self.t0 = time.perf_counter()
-            t, img = img_plot_deque.popleft()
             t = t - self.t0
             img = img[self.ui.roi_xmin:self.ui.roi_xmax, self.ui.roi_ymin:self.ui.roi_ymax]
-            if self.iterator % 3 == 0:
+            if self.iterator % 2 == 0:
                 self.deque_plot_timestamp_405.append(t)
-                self.deque_plot_405.append(np.sum(img))
-                # Calculate mean (mu) and standard deviation (std)
-                self.mu_405 = np.average(self.deque_plot_405)
-                # self.std_405 = np.std(self.deque_plot_405)
-                # Normalize the data (first std is zero, just ignore the error)
-                # if self.std_405 > 0:
-                #     self.norm_plot_405 = (
-                #         self.deque_plot_405 - self.mu_405
-                #     ) / self.std_405 
-            elif self.iterator % 3 == 1:
-                self.deque_plot_timestamp_470.append(t)
-                self.deque_plot_470.append(np.sum(img))
-                self.mu_470 = np.average(self.deque_plot_470)
-                # self.std_470 = np.std(self.deque_plot_470)
-                # if self.std_470 > 0:
-                #     self.norm_plot_470 = (
-                #         self.deque_plot_470 - self.mu_470
-                #     ) / self.std_470
-            else: #self.iterator % 3 = 2
-                self.deque_plot_timestamp_590.append(t)
-                self.deque_plot_590.append(np.average(img))
-                # self.mu_590 = np.average(self.deque_plot_590)
-                # self.std_590 = np.std(self.deque_plot_590)
-                # if self.std_590 > 0:
-                #     self.norm_plot_590 = (
-                #         self.deque_plot_590 - self.mu_590
-                #     )/self.std_590
-            if self.iterator > 1: 
-                dic = {"time_405":[],"time_470":[],"time_590":[],"intensity_405":[],"intensity_470":[],"intensity_590":[]}
-                [dic["intensity_590"],dic["intensity_405"],dic["intensity_470"]],[dic["time_590"],dic["time_405"],dic["time_470"]]  = self.signal_identify(self.deque_plot_405,self.deque_plot_470,self.deque_plot_590,self.deque_plot_timestamp_405,self.deque_plot_timestamp_470,self.deque_plot_timestamp_590)
-                
-                # Clear the data from the previous update off of the plot
-                self.plot_405.plotItem.clear()
-                # Plot the data
-                self.plot_405.plotItem.plot(
-                    dic['time_405'],
-                    dic['intensity_405'],
-                    pen=self.pen_405,
-                )
-                self.plot_470.plotItem.clear()
-                self.plot_470.plotItem.plot(
-                    dic['time_470'],
-                    dic['intensity_470'],
-                    pen=self.pen_470,
-                )
-                self.plot_590.plotItem.clear()
-                self.plot_590.plotItem.plot(
-                    dic['time_590'],
-                    dic['intensity_590'],
-                    pen = self.pen_590,
-                )
-                if self.iterator % 3 == 0:
-                    dic_len = min(len(dic['time_405']),len(dic['time_470']))
-                    # print(len(img_plot_deque))
-                    dic['time_405'] = list(dic['time_405'])[:dic_len]
-                    dic['intensity_405'] = list(dic['intensity_405'])[:dic_len]
-                    dic['time_470'] = list(dic['time_470'])[:dic_len]
-                    dic['intensity_470'] = list(dic['intensity_470'])[:dic_len]
-                    df=pd.DataFrame(dic).astype({'intensity_405': 'float','intensity_470': 'float'})
-                    df["calibrated_470"] = df["intensity_470"]-df["intensity_405"]
-                    df["normalized_470"] = zscore(df["calibrated_470"])
-                    self.plot_filtered_signal.plotItem.clear()
-                    self.plot_filtered_signal.plotItem.plot(
-                        dic['time_470'],
-                        df["calibrated_470"],
-                        pen=self.pen_filtered_signal,
+                self.deque_plot_405.append(np.sum(img))            
+                self.current_405 = np.sum(img)
+                mu, std = np.average(self.deque_plot_405), np.std(self.deque_plot_405)
+                if std > 0:
+                    sequence = (self.deque_plot_405 - mu )/ std
+                    self.plot_405.plotItem.clear()
+                    self.plot_405.plotItem.plot(
+                        self.deque_plot_timestamp_405,
+                        sequence,
+                        pen=self.pen_405,
                     )
+            else:
+                self.deque_plot_timestamp_470.append(t)
+                self.deque_plot_470.append(np.sum(img))                
+                self.current_470 = np.sum(img)
+                if self.current_405!=0:                    
+                    self.deque_plot_diff.append((self.current_470-self.current_405)/self.current_405)
+                else:
+                    self.deque_plot_diff.append(0)
+                mu, std = np.average(self.deque_plot_470), np.std(self.deque_plot_470)
+                if std > 0:
+                    sequence = (self.deque_plot_470 - mu )/ std
+                    self.plot_470.plotItem.clear()
+                    self.plot_470.plotItem.plot(
+                        self.deque_plot_timestamp_470,
+                        sequence,
+                        pen=self.pen_470,
+                    )              
+                self.plot_filtered_signal.plotItem.clear()
+                self.plot_filtered_signal.plotItem.plot(
+                    self.deque_plot_timestamp_405,
+                    self.deque_plot_diff,
+                    pen=self.pen_filtered_signal,
+                )
+            # else: 
+            #     self.deque_plot_timestamp_590.append(t)
+            #     self.deque_plot_590.append(np.sum(img))
+            #     mu, std = np.average(self.deque_plot_590), np.std(self.deque_plot_590)
+            #     if std > 0:
+            #         sequence = (self.deque_plot_590 - mu )/ std
+            #         self.plot_590.plotItem.clear()
+            #         self.plot_590.plotItem.plot(
+            #             self.deque_plot_timestamp_590,
+            #             sequence,
+            #             pen=self.pen_590,
+            #         )
             self.iterator +=1
+            # if self.iterator > 1 and self.iterator % 3 == 0:                
+            #     self.plot_filtered_signal.plotItem.clear()
+            #     self.plot_filtered_signal.plotItem.plot(
+            #         self.deque_plot_timestamp_405,
+            #         sequence,
+            #         pen=self.pen_filtered_signal,
+            #     )
 
 
     def new(self):
@@ -339,7 +326,7 @@ class GUI(QMainWindow):
         else:
             if len(record_deque) == 0:
                 record_deque.append(1)
-            self.rec_worker = RecordingWorker()
+            self.rec_worker = RecordingWorker(images_folder_path= self.img_path)
             self.rec_worker.start() 
             
             
@@ -358,13 +345,18 @@ class GUI(QMainWindow):
 
     
 class RecordingWorker(QtCore.QThread):
+    def __init__(self, images_folder_path:str, parent=None):
+        self.images_folder_path = images_folder_path
+        super().__init__(parent)
+
     def run(self):
         while len(record_deque) > 0:
             if len(img_deque) > 0:
                 img_list = img_deque.popleft()
                 if len(record_deque) > 0:
                     # Make sure this folder exists, otherwise it will result in an error
-                    filename = 'images/img_%s.jpg' % (img_list[0])
+                    filename = os.path.join(self.images_folder_path, f"img_{img_list[0]}.jpg")
+                    # filename = 'images/img_%s.jpg' % (img_list[0])
                     # Crop Roi
                     np_img = img_list[1]
                     crop_img = np_img[roi_xmin:roi_xmax, roi_ymin:roi_ymax]

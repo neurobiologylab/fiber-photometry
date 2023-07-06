@@ -76,7 +76,8 @@ class ParameterWindow(QMainWindow):
     def roi(self):
         self.get_img()
         try:
-            img = copy.copy(self.image)
+            img = cv2.cvtColor(self.image, cv2.COLOR_BAYER_BG2RGB)
+            # img = copy.copy(self.image)
             roi = cv2.selectROI(img)
             self.roi_xmin, self.roi_xmax = int(roi[1]), int(roi[1] + roi[3])
             self.roi_ymin, self.roi_ymax = int(roi[0]), int(roi[0] + roi[2])
@@ -149,10 +150,10 @@ class ParameterWindow(QMainWindow):
                     print('Image incomplete with image status %d ...' % image_result.GetImageStatus())
 
                 else:
-                    # img = image_result.Convert(PySpin.PixelFormat_Mono8, PySpin.HQ_LINEAR)
-                    # self.image = np.array(img.GetData(), dtype="uint8").reshape((imgpip.GetHeight(), img.GetWidth()))
-                    # image_result.Release()
-                    image_data = image_result.GetNDArray()
+                    img = image_result.Convert(PySpin.PixelFormat_Mono8, PySpin.HQ_LINEAR)
+                    self.image = np.array(img.GetData(), dtype="uint8").reshape((img.GetHeight(), img.GetWidth()))
+                    image_result.Release()
+                    # image_data = image_result.GetNDArray()
 
 
             except PySpin.SpinnakerException as ex:

@@ -326,7 +326,7 @@ class GUI(QMainWindow):
         else:
             if len(record_deque) == 0:
                 record_deque.append(1)
-            self.rec_worker = RecordingWorker()
+            self.rec_worker = RecordingWorker(self.img_path)
             self.rec_worker.start() 
             
             
