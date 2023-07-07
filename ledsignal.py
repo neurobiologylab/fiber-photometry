@@ -13,3 +13,7 @@ class Signal():
         self.plot.setLabel("left", ylabel)        
         self.color = color
         self.plot.setYRange(ymin,ymax)
+    
+    def plot(self, timesteps, sequence):
+        self.plot.plotItem.clear()
+        self.plot.plotItem.plot(timesteps,sequence,pen=self.color)

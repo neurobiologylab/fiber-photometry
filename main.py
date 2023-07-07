@@ -16,7 +16,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, Q
 from PySide2.QtGui import QIcon, QPixmap, QImage
 from PySide2 import QtCore
 from flir import RecordingWorker, FLIRAcquisitionWorker, ROI
-from signal import Signal
+from ledsignal import Signal
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -283,8 +283,15 @@ class MainWindow(QMainWindow):
                 self.deque_timesteps1.append(t)
                 self.deque_sequence1.append(np.sum(img))
                 self.mu1, self.std1 = np.average(self.deque_sequence1), np.std(self.deque_sequence1)
-                if self.iterator > 0:
-                    if self.mu 1
+                if self.iterator > 0 and self.std1>0 and self.std2>0:
+                    sequence1 = (self.deque_sequence1 - self.mu1 )/ self.std1
+                    sequence2 = (self.deque_sequence2 - self.mu2 )/ self.std2
+                    if self.mu1>=self.mu2:
+                        self.p405.plot(self.deque_timesteps2, sequence2) 
+                        self.p470.plot(self.deque_timesteps1, sequence1) 
+                    else:
+                        self.p405.plot(self.deque_timesteps1, sequence1) 
+                        self.p470.plot(self.deque_timesteps2, sequence2) 
             self.iterator +=1
 
 
