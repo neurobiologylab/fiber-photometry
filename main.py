@@ -96,7 +96,7 @@ class MainWindow(QMainWindow):
         # Create plot widgets      (self, color:pg.mkPen, ymin, ymax, xlabel= "Time since start (s)", ylabel= "Intensity"):
         self.p405 = Signal(pg.mkPen(color=(128,0,128)), -6,6)
         self.p470 = Signal(pg.mkPen(color=(0,0,255)), -6,6)
-        self.pdiff = Signal(pg.mkPen(color=(0,255,0)), -6,6)
+        self.pnormalized_change = Signal(pg.mkPen(color=(0,255,0)), -6,6)
 
         self.top_layout = QHBoxLayout()
         self.top_layout.addWidget(self.pdiff.plot)
@@ -232,10 +232,10 @@ class MainWindow(QMainWindow):
         the data will be passed into the plot deque, which is used for 
         computation and plotting
         """
-        self.deque_timesteps1 = deque([], maxlen=self.graph_lim)
-        self.deque_timesteps2 = deque([], maxlen=self.graph_lim)
-        self.deque_sequence1 = deque([], maxlen=self.graph_lim)
-        self.deque_sequence2 = deque([], maxlen=self.graph_lim)
+        self.timesteps1 = deque([], maxlen=self.graph_lim)
+        self.timesteps2 = deque([], maxlen=self.graph_lim)
+        self.sequence1 = np.array([])#deque([], maxlen=self.graph_lim)
+        self.sequence2 = np.array([])#deque([], maxlen=self.graph_lim)
 
     def recording(self):
         if not self.is_plotting:
@@ -246,6 +246,7 @@ class MainWindow(QMainWindow):
         else:
             # if len(deque_record) == 0:
             #     deque_record.append(1)
+            self.rec_worker.is_running = True
             self.rec_worker.start() 
             
 
@@ -258,6 +259,7 @@ class MainWindow(QMainWindow):
             return
         # if len(self.deque_acq) == 0:
         #         self.deque_acq.append(1)
+        self.acq_worker.is_running = True
         self.acq_worker.start()
 
         self.plot_timer = QtCore.QTimer()
@@ -276,44 +278,51 @@ class MainWindow(QMainWindow):
             t = t - self.t0
             img = img[self.roi.xmin:self.roi.xmax, self.roi.ymin:self.roi.ymax]
             if self.iterator % 2 == 1:
-                self.deque_timesteps2.append(t)
-                self.deque_sequence2.append(np.sum(img))
-                self.mu2, self.std2 = np.average(self.deque_sequence2), np.std(self.deque_sequence2)
+                self.timesteps2.append(t)
+                np.append(self.sequence2, np.sum(img))
+                self.mu2, self.std2 = np.average(self.sequence2), np.std(self.sequence2)
             else: 
-                self.deque_timesteps1.append(t)
-                self.deque_sequence1.append(np.sum(img))
-                self.mu1, self.std1 = np.average(self.deque_sequence1), np.std(self.deque_sequence1)
+                self.timesteps1.append(t)
+                np.append(self.sequence1, np.sum(img))
+                self.mu1, self.std1 = np.average(self.sequence1), np.std(self.sequence1)
                 if self.iterator > 0 and self.std1>0 and self.std2>0:
-                    sequence1 = (self.deque_sequence1 - self.mu1 )/ self.std1
-                    sequence2 = (self.deque_sequence2 - self.mu2 )/ self.std2
+                    normalized_seq1 = (self.sequence1 - self.mu1 )/ self.std1
+                    normalized_seq2 = (self.sequence2 - self.mu2 )/ self.std2
                     if self.mu1>=self.mu2:
-                        self.p405.plot(self.deque_timesteps2, sequence2) 
-                        self.p470.plot(self.deque_timesteps1, sequence1) 
+                        self.p405.set_sequence(self.timesteps2, normalized_seq2)
+                        self.p470.set_sequence(self.timesteps1, normalized_seq1)
+                        normalized_change = (self.sequence1 - self.sequence2)/self.sequence2
+                        self.pnormalized_change.set_sequence(self.timesteps1, normalized_change)
                     else:
-                        self.p405.plot(self.deque_timesteps1, sequence1) 
-                        self.p470.plot(self.deque_timesteps2, sequence2) 
+                        self.p405.set_sequence(self.timesteps1, normalized_seq1)
+                        self.p470.set_sequence(self.timesteps2, normalized_seq2)
+                        normalized_change = (self.sequence2 - self.sequence1)/self.sequence1
+                        self.pnormalized_change.set_sequence(self.timesteps1, normalized_change)
+                    self.p405.plot() 
+                    self.p470.plot() 
+                    self.pnormalized_change.plot()
             self.iterator +=1
 
 
 
 
 
-                if std > 0:
-                    sequence = (self.deque_sequence1 - mu )/ std
-                    self.plot1.plotItem.clear()
-                    self.plot1.plotItem.plot(
-                        self.deque_timesteps1,
-                        sequence,
-                        pen=self.pen1,
-                    )
-                if std > 0:
-                    sequence = (self.deque_sequence2 - mu )/ std
-                    self.plot2.plotItem.clear()
-                    self.plot2.plotItem.plot(
-                        self.deque_timesteps2,
-                        sequence,
-                        pen=self.pen2,
-                    )
+            #     if std > 0:
+            #         sequence = (self.sequence1 - mu )/ std
+            #         self.plot1.plotItem.clear()
+            #         self.plot1.plotItem.plot(
+            #             self.timesteps1,
+            #             sequence,
+            #             pen=self.pen1,
+            #         )
+            #     if std > 0:
+            #         sequence = (self.sequence2 - mu )/ std
+            #         self.plot2.plotItem.clear()
+            #         self.plot2.plotItem.plot(
+            #             self.timesteps2,
+            #             sequence,
+            #             pen=self.pen2,
+            #         )
 
 
 
@@ -321,14 +330,14 @@ class MainWindow(QMainWindow):
 
 
 
-            if self.iterator > 1 and self.iterator % 3 == 0:
-                sequence = (self.deque_sequence1 - self.deque_sequence2)/self.deque_sequence2
-                self.plot4.plotItem.clear()
-                self.plot4.plotItem.plot(
-                    self.deque_timesteps1,
-                    sequence,
-                    pen=self.pen4,
-                )
+            # if self.iterator > 1 and self.iterator % 3 == 0:
+            #     sequence = (self.sequence1 - self.sequence2)/self.sequence2
+            #     self.plot4.plotItem.clear()
+            #     self.plot4.plotItem.plot(
+            #         self.timesteps1,
+            #         sequence,
+            #         pen=self.pen4,
+            #     )
 
 
 
@@ -336,15 +345,19 @@ class MainWindow(QMainWindow):
         self.plot_timer.stop()
         self.is_plotting = False
         # self.acq_worker.quit()
-        # time.sleep(1)
+        time.sleep(1)
+        
+        self.rec_worker.is_running = False        
+        self.acq_worker.is_running = False
         # if len(deque_record) > 0:
         #     _ = deque_record.popleft()
         # if len(deque_acq) > 0:
         #     _ = deque_acq.popleft()
+        
         time.sleep(3)
         self.acq_worker.quit()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv) 
     window = MainWindow()
-    app.exec_()
+    sys.exit(app.exec_())

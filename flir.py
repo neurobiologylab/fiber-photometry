@@ -27,18 +27,20 @@ class RecordingWorker(QtCore.QThread):
         self.deque_recording = deque_recording
         self.roi = roi
         self.images_folder_path = images_folder_path
+        self.is_running = False
         super().__init__(parent)
 
     def run(self): 
-        if len(self.deque_recording) > 0:
-            img_name, img = self.deque_recording.popleft()
-            # Make sure this folder exists, otherwise it will result in an error
-            filename = os.path.join(self.images_folder_path, f"img_{img_name}.jpg")
-            # Crop Roi
-            img = Image.fromarray(img[self.roi.xmin:self.roi.xmax, self.roi.ymin:self.roi.ymax])
-            # Save image
-            img.save(filename)
-        time.sleep(0.01)
+        while self.is_running:
+            if len(self.deque_recording) > 0:
+                img_name, img = self.deque_recording.popleft()
+                # Make sure this folder exists, otherwise it will result in an error
+                filename = os.path.join(self.images_folder_path, f"img_{img_name}.jpg")
+                # Crop Roi
+                img = Image.fromarray(img[self.roi.xmin:self.roi.xmax, self.roi.ymin:self.roi.ymax])
+                # Save image
+                img.save(filename)
+            time.sleep(0.01)
 
 
 
@@ -49,6 +51,7 @@ class FLIRAcquisitionWorker(QtCore.QThread):
     def __init__(self, deque_recording:deque, deque_plotting:deque, parent=None):
         self.deque_recording = deque_recording
         self.deque_plotting = deque_plotting
+        self.is_running = False
         super().__init__(parent)
 
     def run(self):
@@ -316,41 +319,42 @@ class FLIRAcquisitionWorker(QtCore.QThread):
                 # ctr_task.timing.cfg_implicit_timing(sample_mode=AcquisitionType.CONTINUOUS)
                 # Start triggering
                 #ctr_task.start()
-                #  Retrieve next received image
-                image_result = cam.GetNextImage()
+                while self.is_running:
+                    #  Retrieve next received image
+                    image_result = cam.GetNextImage()
 
-                #  Ensure image completion
-                if image_result.IsIncomplete():
-                    print('Image incomplete with image status %d ...' % image_result.GetImageStatus())
+                    #  Ensure image completion
+                    if image_result.IsIncomplete():
+                        print('Image incomplete with image status %d ...' % image_result.GetImageStatus())
 
-                else:
+                    else:
 
-                    # print('Grabbed Image %d' % (i))
+                        # print('Grabbed Image %d' % (i))
 
-                    #  Convert image to mono 8
-                    img = image_result.Convert(PySpin.PixelFormat_Mono8, PySpin.HQ_LINEAR)
+                        #  Convert image to mono 8
+                        img = image_result.Convert(PySpin.PixelFormat_Mono8, PySpin.HQ_LINEAR)
 
-                    # Create a unique filename
-                    t_file = datetime.datetime.now().strftime('%y-%m-%d_%H-%M-%S-%f')
-                    t_plot = time.perf_counter()
-            
-                    """
-                    # Make sure this folder exists, otherwise it will result in an error
-                    filename = 'images/img_%s.jpg' % (t_file)
-                    # Save image
-                    img.Save(filename)
-                    print('Image saved at %s\n' % filename)
-                    """
-                    
-                    img = image_result.GetNDArray()
-                    # np_img = np.array(img.GetData(), dtype="uint8").reshape((img.GetHeight(), img.GetWidth()))
+                        # Create a unique filename
+                        t_file = datetime.datetime.now().strftime('%y-%m-%d_%H-%M-%S-%f')
+                        t_plot = time.perf_counter()
+                
+                        """
+                        # Make sure this folder exists, otherwise it will result in an error
+                        filename = 'images/img_%s.jpg' % (t_file)
+                        # Save image
+                        img.Save(filename)
+                        print('Image saved at %s\n' % filename)
+                        """
+                        
+                        img = image_result.GetNDArray()
+                        # np_img = np.array(img.GetData(), dtype="uint8").reshape((img.GetHeight(), img.GetWidth()))
 
-                    # Store timestamp and image in global queues for other functions to manipulate
-                    self.deque_recording.append([t_file, img])
-                    self.deque_plotting.append([t_plot, img])
+                        # Store timestamp and image in global queues for other functions to manipulate
+                        self.deque_recording.append([t_file, img])
+                        self.deque_plotting.append([t_plot, img])
 
-                    #  Release image
-                    image_result.Release()
+                        #  Release image
+                        image_result.Release()
                         # i += 1                
                 # ctr_task.stop()
             cam.EndAcquisition()
