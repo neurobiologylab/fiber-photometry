@@ -16,6 +16,7 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, Q
 from PySide2.QtGui import QIcon, QPixmap, QImage
 from PySide2 import QtCore
 from flir import RecordingWorker, FLIRAcquisitionWorker, ROI
+from signal import Signal
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -92,19 +93,17 @@ class MainWindow(QMainWindow):
 
         self.tab_experiment_layout.addLayout(self.top_button_layout)
 
-        # Create plot widgets
-        self.plot1 = pg.PlotWidget()
-        self.plot2 = pg.PlotWidget()
-        self.plot3 = pg.PlotWidget()
-        self.plot4 = pg.PlotWidget()
+        # Create plot widgets      (self, color:pg.mkPen, ymin, ymax, xlabel= "Time since start (s)", ylabel= "Intensity"):
+        self.p405 = Signal(pg.mkPen(color=(128,0,128)), -6,6)
+        self.p470 = Signal(pg.mkPen(color=(0,0,255)), -6,6)
+        self.pdiff = Signal(pg.mkPen(color=(0,255,0)), -6,6)
 
         self.top_layout = QHBoxLayout()
-        self.top_layout.addWidget(self.plot4)
+        self.top_layout.addWidget(self.pdiff.plot)
 
         self.bottom_layout = QHBoxLayout()
-        self.bottom_layout.addWidget(self.plot1)
-        self.bottom_layout.addWidget(self.plot2)
-        self.bottom_layout.addWidget(self.plot3)
+        self.bottom_layout.addWidget(self.p405.plot)
+        self.bottom_layout.addWidget(self.p470.plot)
 
         self.tab_experiment_layout.addLayout(self.top_layout)
         self.tab_experiment_layout.addLayout(self.bottom_layout)
@@ -211,24 +210,20 @@ class MainWindow(QMainWindow):
         self.acq_worker = FLIRAcquisitionWorker()
         self.rec_worker = RecordingWorker()
         
-        # Set labels, colors, ranges for each plot widget
-        self.plot1.setLabel("bottom", "Time since start (s)")
-        self.plot1.setLabel("left", "Intensity")
-        self.plot2.setLabel("bottom", "Time since start (s)")
-        self.plot2.setLabel("left", "Intensity")
-        self.plot3.setLabel("bottom", "Time since start (s)")
-        self.plot3.setLabel("left", "Intensity")
-        self.plot4.setLabel("bottom", "Time since start (s)")
-        self.plot4.setLabel("left", "Intensity")
+        # # Set labels, colors, ranges for each plot widget
+        # self.plot1.setLabel("bottom", "Time since start (s)")
+        # self.plot1.setLabel("left", "Intensity")
+        # self.plot2.setLabel("bottom", "Time since start (s)")
+        # self.plot2.setLabel("left", "Intensity")
+        # self.plot3.setLabel("bottom", "Time since start (s)")
+        # self.plot3.setLabel("left", "Intensity")
 
-        self.pen1 = pg.mkPen(color=(0, 255, 0))
-        self.plot1.setYRange(-6,6)
-        self.pen2 = pg.mkPen(color=(0, 0, 255))
-        self.plot2.setYRange(-6,6)
-        self.pen3 = pg.mkPen(color=(255, 0, 255))
-        self.plot3.setYRange(-6,6)
-        self.pen4 = pg.mkPen(color =(255, 140, 0))
-        self.plot4.setYRange(-6,6)
+        # self.pen1 = pg.mkPen(color=(0, 255, 0))
+        # self.plot1.setYRange(-6,6)
+        # self.pen2 = pg.mkPen(color=(0, 0, 255))
+        # self.plot2.setYRange(-6,6)
+        # self.pen3 = pg.mkPen(color=(255, 0, 255))
+        # self.plot3.setYRange(-6,6)
 
         # Limits the number of data points shown on the graph
         self.graph_lim = 100
@@ -239,10 +234,8 @@ class MainWindow(QMainWindow):
         """
         self.deque_timesteps1 = deque([], maxlen=self.graph_lim)
         self.deque_timesteps2 = deque([], maxlen=self.graph_lim)
-        self.deque_timesteps3 = deque([], maxlen=self.graph_lim)
         self.deque_sequence1 = deque([], maxlen=self.graph_lim)
         self.deque_sequence2 = deque([], maxlen=self.graph_lim)
-        self.deque_sequence3 = deque([], maxlen=self.graph_lim)
 
     def recording(self):
         if not self.is_plotting:
@@ -282,10 +275,22 @@ class MainWindow(QMainWindow):
                 self.t0 = time.perf_counter()
             t = t - self.t0
             img = img[self.roi.xmin:self.roi.xmax, self.roi.ymin:self.roi.ymax]
-            if self.iterator % 3 == 0:
+            if self.iterator % 2 == 1:
+                self.deque_timesteps2.append(t)
+                self.deque_sequence2.append(np.sum(img))
+                self.mu2, self.std2 = np.average(self.deque_sequence2), np.std(self.deque_sequence2)
+            else: 
                 self.deque_timesteps1.append(t)
                 self.deque_sequence1.append(np.sum(img))
-                mu, std = np.average(self.deque_sequence1), np.std(self.deque_sequence1)
+                self.mu1, self.std1 = np.average(self.deque_sequence1), np.std(self.deque_sequence1)
+                if self.iterator > 0:
+                    if self.mu 1
+            self.iterator +=1
+
+
+
+
+
                 if std > 0:
                     sequence = (self.deque_sequence1 - mu )/ std
                     self.plot1.plotItem.clear()
@@ -294,10 +299,6 @@ class MainWindow(QMainWindow):
                         sequence,
                         pen=self.pen1,
                     )
-            elif self.iterator % 3 == 1:
-                self.deque_timesteps2.append(t)
-                self.deque_sequence2.append(np.sum(img))
-                mu, std = np.average(self.deque_sequence2), np.std(self.deque_sequence2)
                 if std > 0:
                     sequence = (self.deque_sequence2 - mu )/ std
                     self.plot2.plotItem.clear()
@@ -306,19 +307,13 @@ class MainWindow(QMainWindow):
                         sequence,
                         pen=self.pen2,
                     )
-            else: 
-                self.deque_timesteps3.append(t)
-                self.deque_sequence3.append(np.sum(img))
-                mu, std = np.average(self.deque_sequence3), np.std(self.deque_sequence3)
-                if std > 0:
-                    sequence = (self.deque_sequence3 - mu )/ std
-                    self.plot3.plotItem.clear()
-                    self.plot3.plotItem.plot(
-                        self.deque_timesteps3,
-                        sequence,
-                        pen=self.pen3,
-                    )
-            self.iterator +=1
+
+
+
+
+
+
+
             if self.iterator > 1 and self.iterator % 3 == 0:
                 sequence = (self.deque_sequence1 - self.deque_sequence2)/self.deque_sequence2
                 self.plot4.plotItem.clear()
