@@ -16,14 +16,16 @@ from PySide2.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, Q
 from PySide2.QtGui import QIcon, QPixmap, QImage
 from PySide2 import QtCore
 from flir import RecordingWorker, FLIRAcquisitionWorker, ROI
-from ledsignal import Signal
+import ledsignal
+from main_ui import Ui_MainWindow
 
 class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, parent=None):
+        super(MainWindow, self).__init__(parent=parent)
 
         self.setWindowTitle("NBI Photometry")
         self.setWindowIcon(QIcon('nbi-logo.jpg'))
+        self.roi = None
 
         self.main_widget = QWidget()
         self.layout = QVBoxLayout(self.main_widget)
@@ -42,6 +44,7 @@ class MainWindow(QMainWindow):
         self.layout.addWidget(self.tab_widget)
         self.setCentralWidget(self.main_widget)
         self.is_experiment_initialized = False
+        self.init_plotting_recording()
         self.show()
 
     def setup_settings_tab(self):
@@ -94,16 +97,16 @@ class MainWindow(QMainWindow):
         self.tab_experiment_layout.addLayout(self.top_button_layout)
 
         # Create plot widgets      (self, color:pg.mkPen, ymin, ymax, xlabel= "Time since start (s)", ylabel= "Intensity"):
-        self.p405 = Signal(pg.mkPen(color=(128,0,128)), -6,6)
-        self.p470 = Signal(pg.mkPen(color=(0,0,255)), -6,6)
-        self.pnormalized_change = Signal(pg.mkPen(color=(0,255,0)), -6,6)
+        # self.p405 = ledsignal.Signal(pg.mkPen(color=(128,0,128)), -6,6)
+        # self.p470 = Signal(pg.mkPen(color=(0,0,255)), -6,6)
+        # self.pnormalized_change = Signal(pg.mkPen(color=(0,255,0)), -6,6)
 
         self.top_layout = QHBoxLayout()
-        self.top_layout.addWidget(self.pdiff.plot)
+        # self.top_layout.addWidget(self.pnormalized_change.plot)
 
         self.bottom_layout = QHBoxLayout()
-        self.bottom_layout.addWidget(self.p405.plot)
-        self.bottom_layout.addWidget(self.p470.plot)
+        # self.bottom_layout.addWidget(self.p405.plot)
+        # self.bottom_layout.addWidget(self.p470.plot)
 
         self.tab_experiment_layout.addLayout(self.top_layout)
         self.tab_experiment_layout.addLayout(self.bottom_layout)
@@ -114,11 +117,14 @@ class MainWindow(QMainWindow):
         experimenter_name = self.txt_name.text()
 
         if not experimenter_name:
-            QMessageBox.critical(self, "Error", "Please enter the experimenter's name")
+            QMessageBox.critical(self, "Error", "Please enter the experimenter's name.")
+            return
+        if self.roi is None:
+            QMessageBox.critical(self, "Error", "Please select the region of interests.")
             return
 
         folder_name = f"{experimenter_name}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
-        folder_path = os.path.join(os.getcwd(), folder_name)
+        folder_path = os.path.join(os.getcwd(), "data",folder_name)
 
         try:
             os.mkdir(folder_path)
@@ -152,52 +158,174 @@ class MainWindow(QMainWindow):
 
         self.images_folder_path = os.path.join(folder_path, "images")
         os.mkdir(self.images_folder_path)
-        self.is_experiment_initialized
+        self.is_experiment_initialized = True
         QMessageBox.information(self, "Success", "New experiment has been successfully initialized.")
 
     def select_roi(self):
-        if self.acquire_image():
+        if self.get_img():
             try:
-                img = cv2.cvtColor(self.image, cv2.COLOR_BAYER_BG2RGB)
+                img = copy.copy(self.image)
+                
                 # img = self.image
                 roi = cv2.selectROI(img)
                 self.roi = ROI(roi)
                 img_crop = img[self.roi.xmin:self.roi.xmax, self.roi.ymin:self.roi.ymax]
-
+                img_crop = cv2.cvtColor(img_crop, cv2.COLOR_BAYER_BG2RGB)
                 # Convert the OpenCV image to QImage
                 q_img = qimage2ndarray.array2qimage(img_crop)
 
-                # Set the QImage in QLabel
-                pixmap = QPixmap.fromImage(q_img)
-                self.img_display.setPixmap(pixmap)
+                # # Set the QImage in QLabel
+                # # pixmap = QPixmap.fromImage(q_img)
+                # self.img_display.setPixmap(QPixmap(q_img))
                 if self.roi_xmax > 0 or self.roi_ymax > 0:
                     cv2.destroyAllWindows()
             except:
                 cv2.destroyAllWindows()
 
-    def acquire_image(self):
-        system = PySpin.System.GetInstance()
-        cam_list = system.GetCameras()
+    def configure_exposure(self, cam):
         try:
-            if cam_list.GetSize() == 0:
-                QMessageBox.critical(self, "Error", "No cameras found")
+            result = True
+            if cam.ExposureAuto.GetAccessMode() != PySpin.RW:
+                print('Unable to disable automatic exposure. Aborting...')
                 return False
-            else:
-                cam = cam_list.GetByIndex(0)
-                cam.Init()
-                cam.BeginAcquisition()
-                image_result = cam.GetNextImage()
-                self.image = image_result.GetNDArray()
-                image_result.Release()
-                cam.EndAcquisition()
-                cam.DeInit()
-                del cam
-        except Exception as e:
-            QMessageBox.critical(self, "Error", str(e))
+
+            cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
+            
+            # Set exposure time manually; exposure time recorded in microseconds
+
+            if cam.ExposureTime.GetAccessMode() != PySpin.RW:
+                print('Unable to set exposure time. Aborting...')
+                return False
+
+            # Ensure desired exposure time does not exceed the maximum
+            exposure_time_to_set = 50000.0
+            exposure_time_to_set = min(cam.ExposureTime.GetMax(), exposure_time_to_set)
+            cam.ExposureTime.SetValue(exposure_time_to_set)
+            
+        except PySpin.SpinnakerException as ex:
+            print('Error: %s' % ex)
+            result = False
+
+        return result
+
+    def acquire_images(self, cam, nodemap, nodemap_tldevice):
+
+        try:
+            result = True
+            node_acquisition_mode = PySpin.CEnumerationPtr(nodemap.GetNode('AcquisitionMode'))
+            if not PySpin.IsAvailable(node_acquisition_mode) or not PySpin.IsWritable(node_acquisition_mode):
+                print('Unable to set acquisition mode to continuous (enum retrieval). Aborting...')
+                return False
+
+            node_acquisition_mode_continuous = node_acquisition_mode.GetEntryByName('Continuous')
+            if not PySpin.IsAvailable(node_acquisition_mode_continuous) or not PySpin.IsReadable(node_acquisition_mode_continuous):
+                print('Unable to set acquisition mode to continuous (entry retrieval). Aborting...')
+                return False
+
+            acquisition_mode_continuous = node_acquisition_mode_continuous.GetValue()
+
+            node_acquisition_mode.SetIntValue(acquisition_mode_continuous)
+
+            cam.BeginAcquisition()
+
+            try:
+                image_result = cam.GetNextImage(30000)
+
+                if image_result.IsIncomplete():
+                    print('Image incomplete with image status %d ...' % image_result.GetImageStatus())
+
+                else:
+                    img = image_result.Convert(PySpin.PixelFormat_Mono8, PySpin.HQ_LINEAR)
+                    self.image = np.array(img.GetData(), dtype="uint8").reshape((img.GetHeight(), img.GetWidth()))
+                    image_result.Release()
+
+            except PySpin.SpinnakerException as ex:
+                print('Error: %s' % ex)
+                return False
+
+            cam.EndAcquisition()
+        
+        except PySpin.SpinnakerException as ex:
+            print('Error: %s' % ex)
             return False
+
+        return result
+
+    def reset_exposure(self, cam):
+        try:
+            result = True
+            if cam.ExposureAuto.GetAccessMode() != PySpin.RW:
+                print('Unable to enable automatic exposure (node retrieval). Non-fatal error...')
+                return False
+
+            cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Continuous)
+
+        except PySpin.SpinnakerException as ex:
+            print('Error: %s' % ex)
+            result = False
+
+        return result
+
+    def run_single_camera(self, cam):
+        try:
+            result = True
+            nodemap_tldevice = cam.GetTLDeviceNodeMap()
+            cam.Init()
+            nodemap = cam.GetNodeMap()
+
+            if self.configure_exposure(cam) is False:
+                return False    
+            result &= self.acquire_images(cam, nodemap, nodemap_tldevice)
+
+            result &= self.reset_exposure(cam)
+
+            cam.DeInit()
+
+        except PySpin.SpinnakerException as ex:
+            print('Error: %s' % ex)
+            result = False
+
+        return result
+
+    def get_img(self):
+        result = True
+        
+        system = PySpin.System.GetInstance()
+        
+        cam_list = system.GetCameras()
+        cam = cam_list[0]
+        result &= self.run_single_camera(cam)
+
+        del cam
         cam_list.Clear()
         system.ReleaseInstance()
-        return True        
+
+        return result
+
+
+    # def acquire_image(self):
+    #     system = PySpin.System.GetInstance()
+    #     cam_list = system.GetCameras()
+    #     try:
+    #         if cam_list.GetSize() == 0:
+    #             QMessageBox.critical(self, "Error", "No cameras found")
+    #             return False
+    #         else:
+    #             cam = cam_list.GetByIndex(0)
+    #             cam.Init()
+    #             cam.BeginAcquisition()
+    #             image_result = cam.GetNextImage()
+    #             self.image = image_result.GetNDArray()
+    #             image_result.Release()
+    #             cam.EndAcquisition()
+    #             cam.DeInit()
+    #     except Exception as e:
+    #         QMessageBox.critical(self, "Error", str(e))
+    #         return False
+    #     del cam
+    #     cam_list.Clear()
+    #     system.ReleaseInstance()
+    #     return True        
 
     def init_plotting_recording(self):
         # Flags for whether or not the user is plotting and recording
@@ -205,10 +333,6 @@ class MainWindow(QMainWindow):
         self.deque_recording, self.deque_plotting =deque([]), deque([])
         self.iterator = 0
         self.t0 = 0
-
-        
-        self.acq_worker = FLIRAcquisitionWorker()
-        self.rec_worker = RecordingWorker()
         
         # # Set labels, colors, ranges for each plot widget
         # self.plot1.setLabel("bottom", "Time since start (s)")
@@ -245,7 +369,8 @@ class MainWindow(QMainWindow):
             )
         else:
             # if len(deque_record) == 0:
-            #     deque_record.append(1)
+            #     deque_record.append(1)  
+            self.rec_worker = RecordingWorker(self.deque_recording, self.roi, images_folder_path= self.images_folder_path)
             self.rec_worker.is_running = True
             self.rec_worker.start() 
             
@@ -258,14 +383,15 @@ class MainWindow(QMainWindow):
             )
             return
         # if len(self.deque_acq) == 0:
-        #         self.deque_acq.append(1)
-        self.acq_worker.is_running = True
+        #         self.deque_acq.append(1) 
+        self.acq_worker = FLIRAcquisitionWorker(self.deque_recording, self.deque_plotting )
+        self.acq_worker.is_running = True       
         self.acq_worker.start()
 
-        self.plot_timer = QtCore.QTimer()
-        self.plot_timer.setTimerType(QtCore.Qt.PreciseTimer)
-        self.plot_timer.timeout.connect(self.update_plot)
-        self.plot_timer.start(10)
+        # self.plot_timer = QtCore.QTimer()
+        # self.plot_timer.setTimerType(QtCore.Qt.PreciseTimer)
+        # self.plot_timer.timeout.connect(self.update_plot)
+        # self.plot_timer.start(10)
         self.is_plotting = True
 
 
@@ -342,7 +468,7 @@ class MainWindow(QMainWindow):
 
 
     def stop(self):
-        self.plot_timer.stop()
+        # self.plot_timer.stop()
         self.is_plotting = False
         # self.acq_worker.quit()
         time.sleep(1)

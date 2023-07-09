@@ -1,23 +1,25 @@
 import pyqtgraph as pg
 
 class Signal():
-    def __init__(self, color:pg.mkPen, ymin, ymax, xlabel= "Time since start (s)", ylabel= "Intensity"):
+    def __init__(self, plot_widget:pg.PlotWidget, color:pg.mkPen, ymin, ymax, xlabel= "Time since start (s)", ylabel= "Intensity"):
 
         """
         Initialize the Signal object.
         Args:
             color (pg.mkPen):
         """
-        self.plot = pg.PlotWidget()
+        self.plot = plot_widget
         self.plot.setLabel("bottom", xlabel)
         self.plot.setLabel("left", ylabel)        
         self.color = color
         self.plot.setYRange(ymin,ymax)
 
     def set_sequence(self, timesteps, sequence):
-        self.sequence = sequence
-        self.timesteps = timesteps
+        # self.sequence = sequence
+        # self.timesteps = timesteps
+        return
     
     def plot(self):
-        self.plot.plotItem.clear()
-        self.plot.plotItem.plot(self.timesteps,self.sequence,pen=self.color)
+        # self.plot.plotItem.clear()
+        # self.plot.plotItem.plot(self.timesteps,self.sequence,pen=self.color)
+        return

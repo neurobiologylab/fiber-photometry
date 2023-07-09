@@ -10,7 +10,7 @@ from PySide2 import QtCore
 from collections import deque
  
 class ROI():
-    def __init__(self, roi: list):
+    def __init__(self, roi):
         """
         Initialize the ROI object.
         
