@@ -28,6 +28,12 @@ class MainUI(object):
         self.col1_layout = QVBoxLayout()
         self.col2_layout = QVBoxLayout()
 
+
+        font = QFont()
+        font.setPointSize(10)
+        font.setBold(True)
+        font.setWeight(75)
+
         # Create r1 with self.lbl_name
         self.r1_layout = QHBoxLayout()
         self.lbl_name = QLabel("<font color='red'>*</font> Experimenter\'s Name:")
@@ -41,7 +47,6 @@ class MainUI(object):
         self.r1_layout.addWidget(self.lbl_name)
         self.r1_layout.addWidget(self.txt_name)
         self.r1_layout.addWidget(self.btn_exp_init)
-        self.col1_layout.addLayout(self.r1_layout)
 
         # Create r2 with self.txt_name, self.btn_roi, and self.btn_exp_init horizontally
         self.r2_layout = QHBoxLayout()
@@ -53,6 +58,7 @@ class MainUI(object):
         self.r2_layout.addWidget(self.lbl_roi)
         self.r2_layout.addWidget(self.btn_roi)
         self.col1_layout.addLayout(self.r2_layout)
+        self.col1_layout.addLayout(self.r1_layout)
 
         # Create r3 with self.btn_plot, self.btn_record, and self.btn_stop horizontally
         self.r3_layout = QHBoxLayout()
@@ -86,18 +92,33 @@ class MainUI(object):
 
         # Create plot widgets and place them in subsequent rows
         self.plot_chn1 = PlotWidget()
+        self.plot_chn1.setFixedHeight(200)
         self.plot_chn1.setObjectName(u"plot_chn1")
         self.plot_chn2 = PlotWidget()
+        self.plot_chn2.setFixedHeight(200)
         self.plot_chn2.setObjectName(u"plot_chn2")
         self.plot_chn3 = PlotWidget()
+        self.plot_chn3.setFixedHeight(200)
         self.plot_chn3.setObjectName(u"plot_chn3")
         self.plot_final = PlotWidget()
         self.plot_final.setObjectName(u"plot_final")
 
+        self.lbl_chn1 = QLabel("Channel 1")
+        self.lbl_chn1.setFont(font)
+        self.lbl_chn2 = QLabel("Channel 2")
+        self.lbl_chn2.setFont(font)
+        self.lbl_chn3 = QLabel("Channel 3")
+        self.lbl_chn3.setFont(font)
+
+
+
         self.layout.addWidget(self.plot_final, 1, 0, 1, 2)
-        self.layout.addWidget(self.plot_chn1, 2, 0, 1, 2)
-        self.layout.addWidget(self.plot_chn2, 3, 0, 1, 2)
-        self.layout.addWidget(self.plot_chn3, 4, 0, 1, 2)
+        self.layout.addWidget(self.lbl_chn1, 2, 0, 1, 2)
+        self.layout.addWidget(self.plot_chn1, 3, 0, 1, 2)
+        self.layout.addWidget(self.lbl_chn2, 4, 0, 1, 2)
+        self.layout.addWidget(self.plot_chn2, 5, 0, 1, 2)
+        self.layout.addWidget(self.lbl_chn3, 6, 0, 1, 2)
+        self.layout.addWidget(self.plot_chn3, 7, 0, 1, 2)
 
         MainWindow.setCentralWidget(self.main_widget)
         # self.retranslateUi(MainWindow)

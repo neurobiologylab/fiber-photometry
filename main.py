@@ -9,7 +9,7 @@ from PySide2.QtWidgets import (
     QPushButton,
     QMessageBox,QGridLayout, QLabel, QLineEdit
 )
-from pyqtgraph import PlotWidget
+from pyqtgraph import PlotWidget, mkPen
 from main_ui import MainUI
 import sys
 import pyqtgraph as pg
@@ -24,13 +24,13 @@ import csv
 import PySpin
 from PIL import Image
 import qimage2ndarray
-import pyqtgraph as pg
+# import pyqtgraph as pg
 from scipy.stats import zscore
 import nidaqmx
 from nidaqmx.constants import AcquisitionType
 from pathlib import Path, PureWindowsPath
 # from parameter_window import ParameterWindow
-from experiment_setup import Settings
+# from experiment_setup import Settings
 from flir import RecordingWorker, FLIRAcquisitionWorker, ROI
 
 
@@ -74,7 +74,10 @@ class Main(QMainWindow):
 
         # Flag for ....
         self.is_experiment_initialized = False
-        self.roi = None 
+        self.roi = None         
+        self.rec_worker = None        
+        self.acq_worker = None  
+        self.plot_timer = None
         
 
         self.init_plotting_recording()
@@ -87,9 +90,6 @@ class Main(QMainWindow):
         self.iterator = 0
         self.t0 = 0
         
-        self.acq_worker = FLIRAcquisitionWorker()
-        self.rec_worker = RecordingWorker()
-        
         # Set labels, colors, ranges for each plot widget
         self.plot_chn1.setLabel("bottom", "Time since start (s)")
         self.plot_chn1.setLabel("left", "Intensity")
@@ -99,15 +99,16 @@ class Main(QMainWindow):
         self.plot_chn3.setLabel("left", "Intensity")
         self.plot_final.setLabel("bottom", "Time since start (s)")
         self.plot_final.setLabel("left", "Intensity")
+        self.plot_final.hide()
 
-        self.pen1 = pg.mkPen(color=(0, 255, 0))
-        self.plot1.setYRange(-6,6)
-        self.pen2 = pg.mkPen(color=(0, 0, 255))
-        self.plot2.setYRange(-6,6)
-        self.pen3 = pg.mkPen(color=(255, 0, 255))
-        self.plot3.setYRange(-6,6)
-        self.pen4 = pg.mkPen(color =(255, 140, 0))
-        self.plot4.setYRange(-6,6)
+        self.pen1 = mkPen(color=(0, 255, 0))
+        self.plot_chn1.setYRange(-6,6)
+        self.pen2 = mkPen(color=(0, 0, 255))
+        self.plot_chn2.setYRange(-6,6)
+        self.pen3 = mkPen(color=(255, 0, 255))
+        self.plot_chn3.setYRange(-6,6)
+        self.pen4 = mkPen(color =(255, 140, 0))
+        self.plot_final.setYRange(-6,6)
 
         # Limits the number of data points shown on the graph
         self.graph_lim = 100
@@ -123,90 +124,88 @@ class Main(QMainWindow):
         self.deque_sequence2 = deque([], maxlen=self.graph_lim)
         self.deque_sequence3 = deque([], maxlen=self.graph_lim)
 
-    def init_plotting_recording1(self):
-        # Initiate double ended queues, store globally so they can be accessed between classes
-        global record_deque, acq_deque
-        record_deque = deque([])
-        acq_deque = deque([])
-        self.iterator = 0
-        global img_deque, img_plot_deque
-        img_deque = deque([])
-        img_plot_deque = deque([])
-        self.t0 = 0
+    # def init_plotting_recording1(self):
+    #     # Initiate double ended queues, store globally so they can be accessed between classes
+    #     global record_deque, acq_deque
+    #     record_deque = deque([])
+    #     acq_deque = deque([])
+    #     self.iterator = 0
+    #     global img_deque, img_plot_deque
+    #     img_deque = deque([])
+    #     img_plot_deque = deque([])
+    #     self.t0 = 0
 
-        # Limits the number of data points shown on the graph
-        self.graph_lim = 100
-        # Use deque to store data, fast with threadsafe append and popleft
-        self.deque_timestamp0 = deque([])
-        self.deque_timestamp1 = deque([])
-        self.deque_timestamp2 = deque([])
-        self.deque_sum_470 = deque([])
-        self.deque_sum_405 = deque([])
-        self.deque_sum_590 = deque([])
-        """
-        First deque will be used to quickly store time and image data, then 
-        the data will be passed into the plot deque, which is used for 
-        computation and plotting
-        """
-        self.deque_plot_timestamp_405 = deque([], maxlen=self.graph_lim)
-        self.deque_plot_timestamp_470 = deque([], maxlen=self.graph_lim)
-        self.deque_plot_timestamp_590 = deque([], maxlen=self.graph_lim)
-        self.deque_plot_470 = deque([], maxlen=self.graph_lim)
-        self.deque_plot_405 = deque([], maxlen=self.graph_lim)
-        self.deque_plot_590 = deque([], maxlen=self.graph_lim)
-        self.deque_plot_diff = deque([], maxlen=self.graph_lim)
-        self.current_470, self.current_405 = 0, 0
+    #     # Limits the number of data points shown on the graph
+    #     self.graph_lim = 100
+    #     # Use deque to store data, fast with threadsafe append and popleft
+    #     self.deque_timestamp0 = deque([])
+    #     self.deque_timestamp1 = deque([])
+    #     self.deque_timestamp2 = deque([])
+    #     self.deque_sum_470 = deque([])
+    #     self.deque_sum_405 = deque([])
+    #     self.deque_sum_590 = deque([])
+    #     """
+    #     First deque will be used to quickly store time and image data, then 
+    #     the data will be passed into the plot deque, which is used for 
+    #     computation and plotting
+    #     """
+    #     self.deque_plot_timestamp_405 = deque([], maxlen=self.graph_lim)
+    #     self.deque_plot_timestamp_470 = deque([], maxlen=self.graph_lim)
+    #     self.deque_plot_timestamp_590 = deque([], maxlen=self.graph_lim)
+    #     self.deque_plot_470 = deque([], maxlen=self.graph_lim)
+    #     self.deque_plot_405 = deque([], maxlen=self.graph_lim)
+    #     self.deque_plot_590 = deque([], maxlen=self.graph_lim)
+    #     self.deque_plot_diff = deque([], maxlen=self.graph_lim)
+    #     self.current_470, self.current_405 = 0, 0
 
-        # Get pyqtgraph plot widgets from main window and set labels
-        # Top plot
+    #     # Get pyqtgraph plot widgets from main window and set labels
+    #     # Top plot
 
-        x1_axis = self.plot_final.getAxis("bottom")
-        x1_axis.setLabel(text="Time since start (s)")
-        y1_axis = self.plot_final.getAxis("left")
-        y1_axis.setLabel(text="Z-score")
-        # self.plot_final.setYRange(-5,5)
-        self.plot_final.setYRange(-6,6)
+    #     x1_axis = self.plot_final.getAxis("bottom")
+    #     x1_axis.setLabel(text="Time since start (s)")
+    #     y1_axis = self.plot_final.getAxis("left")
+    #     y1_axis.setLabel(text="Z-score")
+    #     # self.plot_final.setYRange(-5,5)
+    #     self.plot_final.setYRange(-6,6)
 
-        # Set plot line color to green
-        self.pen_filtered_signal = pg.mkPen(color=(0, 255, 0))
+    #     # Set plot line color to green
+    #     self.pen_filtered_signal = pg.mkPen(color=(0, 255, 0))
 
-        # Bottom left plot
+    #     # Bottom left plot
         
-        x2_axis = self.plot_chn2.getAxis("bottom")
-        x2_axis.setLabel(text="Time since start (s)")
-        y2_axis = self.plot_chn2.getAxis("left")
-        y2_axis.setLabel(text="Intensity")
-        # Set plot line color to blue
-        self.pen_470 = pg.mkPen(color=(0, 0, 255))
-        self.plot_chn2.setYRange(-6,6)
+    #     x2_axis = self.plot_chn2.getAxis("bottom")
+    #     x2_axis.setLabel(text="Time since start (s)")
+    #     y2_axis = self.plot_chn2.getAxis("left")
+    #     y2_axis.setLabel(text="Intensity")
+    #     # Set plot line color to blue
+    #     self.pen_470 = pg.mkPen(color=(0, 0, 255))
+    #     self.plot_chn2.setYRange(-6,6)
 
-        # Bottom right plot
+    #     # Bottom right plot
         
-        x3_axis = self.plot_chn1.getAxis("bottom")
-        x3_axis.setLabel(text="Time since start (s)")
-        y3_axis = self.plot_chn1.getAxis("left")
-        y3_axis.setLabel(text="Intensity")
-        # Set plot line color to purple
-        self.pen_405 = pg.mkPen(color=(255, 0, 255))
-        self.plot_chn1.setYRange(-6,6)
+    #     x3_axis = self.plot_chn1.getAxis("bottom")
+    #     x3_axis.setLabel(text="Time since start (s)")
+    #     y3_axis = self.plot_chn1.getAxis("left")
+    #     y3_axis.setLabel(text="Intensity")
+    #     # Set plot line color to purple
+    #     self.pen_405 = pg.mkPen(color=(255, 0, 255))
+    #     self.plot_chn1.setYRange(-6,6)
 
-        #third plot
+    #     #third plot
 
         
-        x4_axis = self.plot_chn3.getAxis("bottom")
-        x4_axis.setLabel(text = "Time since start (s)")
-        y4_axis = self.plot_chn3.getAxis("left")
-        y4_axis.setLabel(text = "Intensity")
-        #set plot line color to orange
-        self.pen_590 = pg.mkPen(color =(255, 140, 0))
-        self.plot_chn3.setYRange(-6,6)
-
-
+    #     x4_axis = self.plot_chn3.getAxis("bottom")
+    #     x4_axis.setLabel(text = "Time since start (s)")
+    #     y4_axis = self.plot_chn3.getAxis("left")
+    #     y4_axis.setLabel(text = "Intensity")
+    #     #set plot line color to orange
+    #     self.pen_590 = pg.mkPen(color =(255, 140, 0))
+    #     self.plot_chn3.setYRange(-6,6)
 
 
     def init_experiment(self):
-        experimenter_name = self.txt_name.text()
-
+        experimenter_name = self.txt_name.text()   
+         
         if not experimenter_name:
             QMessageBox.critical(self, "Error", "Please enter the experimenter's name")
             return
@@ -214,6 +213,8 @@ class Main(QMainWindow):
         if self.roi is None:
             QMessageBox.critical(self, "Error", "Please select the region of interest")
             return
+
+
 
         folder_name = f"{experimenter_name}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
         folder_path = os.path.join(os.getcwd(), "data", folder_name)
@@ -225,28 +226,28 @@ class Main(QMainWindow):
             return
 
         self.experiment_data_path = os.path.join(folder_path, "ExperimentData.csv")
-        with open(self.experiment_data_path, "w") as file:
-            writer = csv.writer(file)
-            header = ["Timestamp", "Sum Fluorescence (405nm)", "Sum Fluorescence (470nm)", "Sum Fluorescence (590nm)"]
-            writer.writerow(header)
+        # with open(self.experiment_data_path, "w") as file:
+        #     writer = csv.writer(file)
+        #     header = ["Timestamp", "Sum Fluorescence (405nm)", "Sum Fluorescence (470nm)", "Sum Fluorescence (590nm)"]
+        #     writer.writerow(header)
 
-        self.experiment_info_path = os.path.join(folder_path, "ExperimentInfo.csv")
-        with open(self.experiment_info_path, "w") as file:
-            writer = csv.writer(file)
-            header = [
-                "Experiment Date and Time",
-                "Recording Start Time",
-                "Recording End Time",
-                "Sampling Rate",
-                "Exposure",
-                "ROI_XMIN",
-                "ROI_XMAX",
-                "ROI_YMIN",
-                "ROI_YMAX",
-                "ROI_XRANGE",
-                "ROI_YRANGE",
-            ]
-            writer.writerow(header)
+        # self.experiment_info_path = os.path.join(folder_path, "ExperimentInfo.csv")
+        # with open(self.experiment_info_path, "w") as file:
+        #     writer = csv.writer(file)
+        #     header = [
+        #         "Experiment Date and Time",
+        #         "Recording Start Time",
+        #         "Recording End Time",
+        #         "Sampling Rate",
+        #         "Exposure",
+        #         "ROI_XMIN",
+        #         "ROI_XMAX",
+        #         "ROI_YMIN",
+        #         "ROI_YMAX",
+        #         "ROI_XRANGE",
+        #         "ROI_YRANGE",
+        #     ]
+        #     writer.writerow(header)
 
         self.images_folder_path = os.path.join(folder_path, "images")
         os.mkdir(self.images_folder_path)
@@ -307,6 +308,8 @@ class Main(QMainWindow):
         else:
             # if len(deque_record) == 0:
             #     deque_record.append(1)
+            self.rec_worker = RecordingWorker(self.deque_recording, self.roi, images_folder_path= self.images_folder_path)
+            self.rec_worker.is_running = True
             self.rec_worker.start() 
             
 
@@ -317,8 +320,8 @@ class Main(QMainWindow):
             "Please initialize the new experiment first."
             )
             return
-        # if len(self.deque_acq) == 0:
-        #         self.deque_acq.append(1)
+        self.acq_worker = FLIRAcquisitionWorker(self.deque_recording, self.deque_plotting )
+        self.acq_worker.is_running = True        
         self.acq_worker.start()
 
         self.plot_timer = QtCore.QTimer()
@@ -338,63 +341,75 @@ class Main(QMainWindow):
             img = img[self.roi.xmin:self.roi.xmax, self.roi.ymin:self.roi.ymax]
             if self.iterator % 3 == 0:
                 self.deque_timesteps1.append(t)
-                self.deque_sequence1.append(np.sum(img))
+                self.deque_sequence1.append(np.mean(img))
                 mu, std = np.average(self.deque_sequence1), np.std(self.deque_sequence1)
                 if std > 0:
                     sequence = (self.deque_sequence1 - mu )/ std
-                    self.plot1.plotItem.clear()
-                    self.plot1.plotItem.plot(
+                    self.plot_chn1.plotItem.clear()
+                    self.plot_chn1.plotItem.plot(
                         self.deque_timesteps1,
                         sequence,
                         pen=self.pen1,
                     )
             elif self.iterator % 3 == 1:
                 self.deque_timesteps2.append(t)
-                self.deque_sequence2.append(np.sum(img))
+                self.deque_sequence2.append(np.mean(img))
                 mu, std = np.average(self.deque_sequence2), np.std(self.deque_sequence2)
                 if std > 0:
                     sequence = (self.deque_sequence2 - mu )/ std
-                    self.plot2.plotItem.clear()
-                    self.plot2.plotItem.plot(
+                    self.plot_chn2.plotItem.clear()
+                    self.plot_chn2.plotItem.plot(
                         self.deque_timesteps2,
                         sequence,
                         pen=self.pen2,
                     )
             else: 
                 self.deque_timesteps3.append(t)
-                self.deque_sequence3.append(np.sum(img))
+                self.deque_sequence3.append(np.mean(img))
                 mu, std = np.average(self.deque_sequence3), np.std(self.deque_sequence3)
                 if std > 0:
                     sequence = (self.deque_sequence3 - mu )/ std
-                    self.plot3.plotItem.clear()
-                    self.plot3.plotItem.plot(
+                    self.plot_chn3.plotItem.clear()
+                    self.plot_chn3.plotItem.plot(
                         self.deque_timesteps3,
                         sequence,
                         pen=self.pen3,
                     )
             self.iterator +=1
-            if self.iterator > 1 and self.iterator % 3 == 0:
-                sequence = (self.deque_sequence1 - self.deque_sequence2)/self.deque_sequence2
-                self.plot4.plotItem.clear()
-                self.plot4.plotItem.plot(
-                    self.deque_timesteps1,
-                    sequence,
-                    pen=self.pen4,
-                )
+            # if self.iterator > 1 and self.iterator % 3 == 0:
+            #     sequence = (self.deque_sequence1 - self.deque_sequence2)/self.deque_sequence2
+            #     self.plot_final.plotItem.clear()
+            #     self.plot_final.plotItem.plot(
+            #         self.deque_timesteps1,
+            #         sequence,
+            #         pen=self.pen4,
+            #     )
 
 
 
     def stop(self):
-        self.plot_timer.stop()
+        if self.plot_timer:
+            self.plot_timer.stop()
         self.is_plotting = False
         # self.acq_worker.quit()
-        # time.sleep(1)
+        df_data = pd.DataFrame({'chn1_time':self.deque_timesteps1, 'chn1_avg_intensity':self.deque_sequence1,'chn2_time':self.deque_timesteps2, 'chn2_avg_intensity':self.deque_sequence2,'chn3_time': self.deque_timesteps3,'chn3_avg_intensity':self.deque_sequence3})
+        df_data.to_csv(self.experiment_data_path)
+        time.sleep(3)
+        if self.rec_worker:
+            self.rec_worker.is_running = False  
+            time.sleep(1) 
+            self.rec_worker.quit() 
+        if self.acq_worker:    
+            self.acq_worker.is_running = False
+            time.sleep(1) 
+            self.acq_worker.quit()
         # if len(deque_record) > 0:
         #     _ = deque_record.popleft()
         # if len(deque_acq) > 0:
         #     _ = deque_acq.popleft()
-        time.sleep(3)
-        self.acq_worker.quit()
+        
+        self.close()
+        # self.deque_sequence1
 
 
 

@@ -1,4 +1,3 @@
-   
 import os
 import datetime
 import time
@@ -10,7 +9,7 @@ from PySide2 import QtCore
 from collections import deque
  
 class ROI():
-    def __init__(self, roi: list):
+    def __init__(self, roi):
         """
         Initialize the ROI object.
         
@@ -22,30 +21,36 @@ class ROI():
         self.ymin = roi[0]
         self.ymax = roi[0] + roi[2]
 
-
 class RecordingWorker(QtCore.QThread):
     def __init__(self, deque_recording:deque, roi:ROI, images_folder_path:str, parent=None):
         self.deque_recording = deque_recording
         self.roi = roi
         self.images_folder_path = images_folder_path
+        self.is_running = False
         super().__init__(parent)
 
     def run(self): 
-        if len(self.deque_recording) > 0:
-            img_name, img = self.deque_recording.popleft()
-            # Make sure this folder exists, otherwise it will result in an error
-            filename = os.path.join(self.images_folder_path, f"img_{img_name}.jpg")
-            # Crop Roi
-            img = Image.fromarray(img[self.roi.xmin:self.roi.xmax, self.roi.ymin:self.roi.ymax])
-            # Save image
-            img.save(filename)
-        time.sleep(0.01)
+        while self.is_running:
+            if len(self.deque_recording) > 0:
+                img_name, img = self.deque_recording.popleft()
+                # Make sure this folder exists, otherwise it will result in an error
+                filename = os.path.join(self.images_folder_path, f"img_{img_name}.jpg")
+                # Crop Roi
+                img = Image.fromarray(img[self.roi.xmin:self.roi.xmax, self.roi.ymin:self.roi.ymax])
+                # Save image
+                img.save(filename)
+            time.sleep(0.01)
+
+
+
+
 
 class FLIRAcquisitionWorker(QtCore.QThread):
 
     def __init__(self, deque_recording:deque, deque_plotting:deque, parent=None):
         self.deque_recording = deque_recording
         self.deque_plotting = deque_plotting
+        self.is_running = False
         super().__init__(parent)
 
     def run(self):
@@ -56,7 +61,7 @@ class FLIRAcquisitionWorker(QtCore.QThread):
         cam_list = system.GetCameras()
 
         num_cameras = cam_list.GetSize()
-
+        print(f"num_cameras is {num_cameras}")
         # Finish if there are no cameras
         if num_cameras == 0:
             # Clear camera list before releasing system
@@ -81,9 +86,56 @@ class FLIRAcquisitionWorker(QtCore.QThread):
         # Release system instance
         system.ReleaseInstance()
         print('Done! Exiting program now.')
-    
 
-class FLIRA():
+    def configure_exposure(self, cam, exposure_time = 30000.0):
+        print('*** CONFIGURING EXPOSURE ***\n')
+
+        try:
+            result = True
+
+            # Turn off automatic exposure mode
+
+            if cam.ExposureAuto.GetAccessMode() != PySpin.RW:
+                print('Unable to disable automatic exposure. Aborting...')
+                return False
+
+            cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
+            print('Automatic exposure disabled...')
+
+            # Set exposure time manually; exposure time recorded in microseconds
+
+            if cam.ExposureTime.GetAccessMode() != PySpin.RW:
+                print('Unable to set exposure time. Aborting...')
+                return False
+
+            # Ensure desired exposure time does not exceed the maximum this is in us so 50 ms
+            exposure_time_to_set = min(cam.ExposureTime.GetMax(), exposure_time)
+            cam.ExposureTime.SetValue(exposure_time_to_set)
+            print('Shutter time set to %s us...\n' % exposure_time_to_set)
+
+        except PySpin.SpinnakerException as ex:
+            print('Error: %s' % ex)
+            result = False
+        return result
+          
+    def reset_exposure(self, cam):
+        # Return the camera to a normal state by re-enabling automatic exposure.
+        try:
+            result = True
+            if cam.ExposureAuto.GetAccessMode() != PySpin.RW:
+                print('Unable to enable automatic exposure (node retrieval). Non-fatal error...')
+                return False
+
+            cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Continuous)
+
+            print('Automatic exposure enabled...')
+
+        except PySpin.SpinnakerException as ex:
+            print('Error: %s' % ex)
+            result = False
+
+        return result
+    
     def configure_trigger(self, cam):
         result = True
         print('*** CONFIGURING HARDWARE TRIGGER ***\n')
@@ -148,38 +200,6 @@ class FLIRA():
             return False
 
         return result
-
-    
-    def configure_exposure(self, cam, exposure_time=30000.0):
-        print('*** CONFIGURING EXPOSURE ***\n')
-
-        try:
-            result = True
-
-            # Turn off automatic exposure mode
-
-            if cam.ExposureAuto.GetAccessMode() != PySpin.RW:
-                print('Unable to disable automatic exposure. Aborting...')
-                return False
-
-            cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Off)
-            print('Automatic exposure disabled...')
-
-            # Set exposure time manually; exposure time recorded in microseconds
-
-            if cam.ExposureTime.GetAccessMode() != PySpin.RW:
-                print('Unable to set exposure time. Aborting...')
-                return False
-
-            # Ensure desired exposure time does not exceed the maximum this is in us so 50 ms
-            exposure_time_to_set = min(cam.ExposureTime.GetMax(), exposure_time)
-            cam.ExposureTime.SetValue(exposure_time_to_set)
-            print('Shutter time set to %s us...\n' % exposure_time_to_set)
-
-        except PySpin.SpinnakerException as ex:
-            print('Error: %s' % ex)
-            result = False
-        return result
     
     def reset_trigger(self, nodemap):
         try:
@@ -204,24 +224,6 @@ class FLIRA():
 
         return result
     
-    def reset_exposure(self, cam):
-        # Return the camera to a normal state by re-enabling automatic exposure.
-        try:
-            result = True
-            if cam.ExposureAuto.GetAccessMode() != PySpin.RW:
-                print('Unable to enable automatic exposure (node retrieval). Non-fatal error...')
-                return False
-
-            cam.ExposureAuto.SetValue(PySpin.ExposureAuto_Continuous)
-
-            print('Automatic exposure enabled...')
-
-        except PySpin.SpinnakerException as ex:
-            print('Error: %s' % ex)
-            result = False
-
-        return result
-
     def run_single_camera(self, cam):
         try:
             result = True
@@ -261,7 +263,6 @@ class FLIRA():
             result = False
 
         return result
-
 
     def acquire_images(self, cam, nodemap, nodemap_tldevice):
 
@@ -313,41 +314,42 @@ class FLIRA():
                 # ctr_task.timing.cfg_implicit_timing(sample_mode=AcquisitionType.CONTINUOUS)
                 # Start triggering
                 #ctr_task.start()
-                #  Retrieve next received image
-                image_result = cam.GetNextImage()
+                while self.is_running:
+                    #  Retrieve next received image
+                    image_result = cam.GetNextImage()
 
-                #  Ensure image completion
-                if image_result.IsIncomplete():
-                    print('Image incomplete with image status %d ...' % image_result.GetImageStatus())
+                    #  Ensure image completion
+                    if image_result.IsIncomplete():
+                        print('Image incomplete with image status %d ...' % image_result.GetImageStatus())
 
-                else:
+                    else:
 
-                    # print('Grabbed Image %d' % (i))
+                        # print('Grabbed Image %d' % (i))
 
-                    #  Convert image to mono 8
-                    img = image_result.Convert(PySpin.PixelFormat_Mono8, PySpin.HQ_LINEAR)
+                        #  Convert image to mono 8
+                        img = image_result.Convert(PySpin.PixelFormat_Mono8, PySpin.HQ_LINEAR)
 
-                    # Create a unique filename
-                    t_file = datetime.datetime.now().strftime('%y-%m-%d_%H-%M-%S-%f')
-                    t_plot = time.perf_counter()
-            
-                    """
-                    # Make sure this folder exists, otherwise it will result in an error
-                    filename = 'images/img_%s.jpg' % (t_file)
-                    # Save image
-                    img.Save(filename)
-                    print('Image saved at %s\n' % filename)
-                    """
-                    
-                    img = image_result.GetNDArray()
-                    # np_img = np.array(img.GetData(), dtype="uint8").reshape((img.GetHeight(), img.GetWidth()))
+                        # Create a unique filename
+                        t_file = datetime.datetime.now().strftime('%y-%m-%d_%H-%M-%S-%f')
+                        t_plot = time.perf_counter()
+                
+                        """
+                        # Make sure this folder exists, otherwise it will result in an error
+                        filename = 'images/img_%s.jpg' % (t_file)
+                        # Save image
+                        img.Save(filename)
+                        print('Image saved at %s\n' % filename)
+                        """
+                        
+                        img = image_result.GetNDArray()
+                        # np_img = np.array(img.GetData(), dtype="uint8").reshape((img.GetHeight(), img.GetWidth()))
 
-                    # Store timestamp and image in global queues for other functions to manipulate
-                    self.deque_recording.append([t_file, img])
-                    self.deque_plotting.append([t_plot, img])
+                        # Store timestamp and image in global queues for other functions to manipulate
+                        self.deque_recording.append([t_file, img])
+                        self.deque_plotting.append([t_plot, img])
 
-                    #  Release image
-                    image_result.Release()
+                        #  Release image
+                        image_result.Release()
                         # i += 1                
                 # ctr_task.stop()
             cam.EndAcquisition()
@@ -355,4 +357,8 @@ class FLIRA():
         except PySpin.SpinnakerException as ex:
             print('Error: %s' % ex)
             return False
+
         return result
+
+
+
