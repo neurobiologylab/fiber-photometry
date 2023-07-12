@@ -10,7 +10,7 @@ This repository contains code and documentation for a flexible and versatile sys
 - High-quality and reliable data collection
 
 ## Getting Started
-
+https://forums.ni.com/t5/Example-Code/Generate-Multiple-Channels-of-Digital-Output-with-Different/ta-p/3512729
 <!-- To order parts and set up hardware, see the parts list below: 
 
 | Item Number | Description | ECCN | Quantity | Price Each | Amount |
