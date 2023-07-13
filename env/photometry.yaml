@@ -17,6 +17,7 @@ dependencies:
   - xz=5.4.2=h8cc25b3_0
   - zlib=1.2.13=h8cc25b3_0
   - pip:
+      - scikit-learn
       - PySide2==5.15.2.1
       - pyqtgraph==0.13.3
       - pandas==2.0.3
