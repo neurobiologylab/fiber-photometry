@@ -282,12 +282,28 @@ class Main(QMainWindow):
             cam.DeInit()
 
         except PySpin.SpinnakerException as ex:
-            print('Error: %s' % ex)
+            print('Error: %s. Camera might be in use or not accessible.' % ex)  
             result = False
+        
+        # if not result:
+        #     try:
+        #         cam.EndAcquisition()
+        #         print("Camera ended acquisition.")
+        #     except PySpin.SpinnakerException as ex:
+        #         print('Error: %s. Failed to end acquisition.' % ex)
+
+        #     try:
+        #         cam.DeInit()
+        #         print("Camera de-initialized.")
+        #     except PySpin.SpinnakerException as ex:
+        #         print('Error: %s. Failed to de-initialize the camera.' % ex)
 
         return result
 
-
+    def testDevice(self, source):
+        cap = cv2.VideoCapture(source) 
+        if cap is None or not cap.isOpened():
+            print('Warning: unable to open video source: ', source)
     def get_img(self):
         result = True
         
@@ -295,6 +311,7 @@ class Main(QMainWindow):
         
         cam_list = system.GetCameras()
         cam = cam_list[0]
+
         result &= self.run_single_camera(cam)
 
         del cam
@@ -400,18 +417,18 @@ class Main(QMainWindow):
         dic['chn3_time'], dic['chn3_avg_intensity'] = dic['chn3_time'][:dic_len], dic['chn3_avg_intensity'][:dic_len]
         df_data = pd.DataFrame(dic).astype({'chn1_avg_intensity': 'float','chn2_avg_intensity': 'float','chn3_avg_intensity': 'float'})
         df_data.to_csv(self.experiment_data_path)
-        time.sleep(3)
         if self.rec_worker:
             self.rec_worker.is_running = False  
-            time.sleep(10) 
+            time.sleep(3) 
             print(self.rec_worker.isRunning())
             self.rec_worker.quit() 
         if self.acq_worker:    
             self.acq_worker.is_running = False
-            time.sleep(50) 
+            time.sleep(3) 
             print(self.acq_worker.isRunning())
             self.acq_worker.quit()                
         self.is_experiment_initialized = False
+        QMessageBox.information(self, "Success", f"Experiment data has been saved at {self.experiment_data_path}.")
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
