@@ -1,4 +1,4 @@
-# Multi-color Fiber Photometry
+# Fiber Photometry
 
 This repository contains code and documentation for a flexible and versatile system for multi-color fiber photometry using GCaMP6s and ChrimsonR. The system is designed to enable researchers to perform high-quality, reliable fiber photometry experiments using a variety of experimental designs. 
 
@@ -9,8 +9,8 @@ This repository contains code and documentation for a flexible and versatile sys
 - Flexible and versatile design for use with a variety of experimental designs
 - High-quality and reliable data collection
 
-## Getting Started
-
+## System Setup
+### Purchasing List
 <!-- To order parts and set up hardware, see the parts list below: 
 
 | Item Number | Description | ECCN | Quantity | Price Each | Amount |
@@ -62,22 +62,11 @@ This repository contains code and documentation for a flexible and versatile sys
 | ADAL1-5     | Ceramic Split Mating Sleeves for Ø1.25 mm (LC/PC) Ferrules, 5 Pack                                        | -    | 10       | $20.96     | $209.60    |
 | ADAF1-5     | Ceramic Split Mating Sleeves for Ø2.5 mm (FC/PC, ST/PC, or SC/PC) Ferrules, 5 Pack                          | -    | 10       | $23.27     | $232.70    | -->
 
+## Labview Application
 
-## Installation
+https://forums.ni.com/t5/Example-Code/Generate-Multiple-Channels-of-Digital-Output-with-Different/ta-p/3512729
 
-Once hardware is set up, install the system by following steps:
 
-1. Clone the repository to your local machine
-2. Install the required dependencies (list of dependencies here)
-3. Follow the instructions in the documentation to set up and use the system
-
-## Python App
-1. Open the repository and execute the `main.py` script.
-2. Click on "New" to specify the folder for data storage.
-3. Select "Set Parameters" to choose the region of interest.
-4. Click on "Plot" and "Record" to start recording.
-
-## LabView
 1. Create a blank VI by clicking on the block diagram (blank white background without grid), and right-click to open the functions palette: Measurement I/O > Daqmx data acquisition > daq assistant.
 
    <img src="./imgs/labview_DAQ_Assistant.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
@@ -132,14 +121,16 @@ Please note that if the window for selecting the region of interest appears too 
 
 If the issue persists, consider closing and restarting the Python app or restarting your machine as possible solutions.
 
+## Python Applicaton 
 
-## Usage
+### Build Environment 
 
-To use the system, follow these steps:
+### Python App
+1. Open the repository and execute the `main.py` script.
+2. Click on "New" to specify the folder for data storage.
+3. Select "Set Parameters" to choose the region of interest.
+4. Click on "Plot" and "Record" to start recording.
 
-1. Set up the hardware and software according to the instructions in the documentation
-2. Design and run your experiment using the system
-3. Collect and analyze your data using the provided code and tools
 
 ## Contributing
 
