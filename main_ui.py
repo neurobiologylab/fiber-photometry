@@ -1,19 +1,7 @@
-# -*- coding: utf-8 -*-
-
-################################################################################
-## Form generated from reading UI file 'main.ui'
-##
-## Created by: Qt User Interface Compiler version 5.15.2
-##
-## WARNING! All changes made in this file will be lost when recompiling UI file!
-################################################################################
-
 from PySide2.QtCore import *
 from PySide2.QtGui import *
 from PySide2.QtWidgets import *
 from PySide2 import QtCore
-
-# from pyqtgraph import PlotWidget
 from widget import MyMplCanvas
 
 class MainUI(object):
@@ -102,29 +90,21 @@ class MainUI(object):
         self.layout.addLayout(self.col2_layout, 0, 1)
 
         # Create plot widgets and place them in subsequent rows
-        self.canvas_chn1 = MyMplCanvas()
+        purple_color = "#8C6BB1"
+        blue_color = "#2C82C9"
+        red_color = "#E15759"
+        black_color = "#000000"
+        orange_color = "#FFA500"
+        self.canvas_chn1 = MyMplCanvas(purple_color)
         self.canvas_chn1.setFixedHeight(200)
         self.canvas_chn1.setObjectName(u"canvas_chn1")
-        self.canvas_chn2 = MyMplCanvas()
+        self.canvas_chn2 = MyMplCanvas(blue_color)
         self.canvas_chn2.setFixedHeight(200)
         self.canvas_chn2.setObjectName(u"canvas_chn2")
-        self.canvas_chn3 = MyMplCanvas()
+        self.canvas_chn3 = MyMplCanvas(red_color)
         self.canvas_chn3.setFixedHeight(200)
         self.canvas_chn3.setObjectName(u"canvas_chn3")
 
-
-
-        # self.plot_chn1 = PlotWidget()
-        # self.plot_chn1.setFixedHeight(200)
-        # self.plot_chn1.setObjectName(u"plot_chn1")
-        # self.plot_chn2 = PlotWidget()
-        # self.plot_chn2.setFixedHeight(200)
-        # self.plot_chn2.setObjectName(u"plot_chn2")
-        # self.plot_chn3 = PlotWidget()
-        # self.plot_chn3.setFixedHeight(200)
-        # self.plot_chn3.setObjectName(u"plot_chn3")
-        # self.plot_final = PlotWidget()
-        # self.plot_final.setObjectName(u"plot_final")
 
         self.lbl_chn1 = QLabel("Channel 1")
         self.lbl_chn1.setFont(font)

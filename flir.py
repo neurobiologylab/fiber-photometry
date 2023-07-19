@@ -1,12 +1,9 @@
 import os
 import datetime
-import time
 import numpy as np
 import PySpin
-import nidaqmx
 from PIL import Image
-from PySide2.QtCore import QThread, QObject, Signal, Slot
-from collections import deque
+from PySide2.QtCore import QObject, Signal, Slot
  
 class ROI():
     def __init__(self, roi):
@@ -44,68 +41,28 @@ class Worker(QObject):
         i = 0
         self.flir = FLIR()
         status = (self.flir.init_acquisition()) and (self.flir.cam is not None)
-        print(f"is running? {self.running}; status: {status}")
         while self.running & status:
             img = self.flir.acquire_image()[self.roi.xmin:self.roi.xmax, self.roi.ymin:self.roi.ymax]
             if i == 0:
                 self.t0 = datetime.datetime.now()
-            channel = i%3
-            print("here1")         
+            channel = i%3       
             self.image_acquisition[channel]["images"].append(img)
             self.image_acquisition[channel]["mean"].append(np.mean(img))
-            self.image_acquisition[channel]["time"].append(datetime.datetime.now())   
-            print(f"here2, {self.image_save}")         
-            if self.image_save:    
-                print(f"here2.5; {self.images_folder_path}, {channel}")      
+            self.image_acquisition[channel]["time"].append(datetime.datetime.now())  
+            if self.image_save:        
                 folder_path = os.path.join(self.images_folder_path, f"chn{channel}")
-                print("here3")   
                 if not os.path.exists(folder_path):
-                    os.makedirs(folder_path)    
-                print("here4")                     
+                    os.makedirs(folder_path)      
                 filename = os.path.join(folder_path, f"{datetime.datetime.now().strftime('%y-%m-%d_%H-%M-%S-%f')}.jpg")
-                print("here5")   
                 imag = Image.fromarray(img)
-                print(f"is running? {self.running}; status: {status}; save? {self.image_save} I am working on channel {channel}, image {i}, {imag}")
                 Image.fromarray(img).save(filename)                
             self.num_imgs.emit(i)             
             self.num_seconds.emit((datetime.datetime.now()-self.t0).total_seconds())
             i+=1
 
-                # # Create a unique filename
-                # t_file = datetime.datetime.now().strftime('%y-%m-%d_%H-%M-%S-%f')
-                # t_plot = time.perf_counter()
-        
-        
-
-                # # Store timestamp and image in global queues for other functions to manipulate
-                # self.deque_recording.append([t_file, img])
-                # self.deque_plotting.append([t_plot, img])
-            
-
-
-            # while self.deque_recording:
-            #     img_name, img = self.deque_recording.popleft()
-            #     # Make sure this folder exists, otherwise it will result in an error
-            #     filename = os.path.join(self.images_folder_path, f"img_{img_name}.jpg")
-            #     # Crop Roi
-            #     img = Image.fromarray(img[self.roi.xmin:self.roi.xmax, self.roi.ymin:self.roi.ymax])
-            #     # Save image
-            #     img.save(filename)
-            #     self.process.emit(i)
-            #     i+=1
         self.flir.end_acquisition()
         self.flir.release()
         self.completed.emit(True)
-
-
-
-# class AcquisitionWorker(QObject):
-
-#     def __init__(self, deque_recording:deque, deque_plotting:deque, parent=None):
-#         self.deque_recording = deque_recording
-#         self.deque_plotting = deque_plotting
-#         self.is_running = False
-#         super().__init__(parent)
 
 
 class FLIR():
@@ -115,7 +72,6 @@ class FLIR():
         # Retrieve list of cameras from the system
         self.cam_list = self.system.GetCameras()
         num_cameras = self.cam_list.GetSize()
-        print(f"num_cameras {num_cameras}")
         # Finish if there are no cameras
         if num_cameras == 0:
             print('No Camera Found!')
