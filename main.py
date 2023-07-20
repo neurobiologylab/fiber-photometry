@@ -42,7 +42,7 @@ class Main(QMainWindow):
         self.btn_exp_init = self.findChild(QPushButton, "btn_exp_init")        
         self.btn_plot = self.findChild(QPushButton, "btn_plot")
         self.chk_record = self.findChild(QCheckBox, "chk_record")
-        self.lcd_img = self.findChild(QLCDNumber,"lcd_img")
+        self.lcd_freq = self.findChild(QLCDNumber,"lcd_freq")
         self.lcd_time = self.findChild(QLCDNumber,"lcd_time")
         self.btn_stop = self.findChild(QPushButton, "btn_stop")
         self.img_display = self.findChild(QLabel, "img_display")
@@ -77,14 +77,14 @@ class Main(QMainWindow):
 
         # Limits the number of data points shown on the graph
         self.graph_lim = 100
-        self.lcd_img.display(0)
+        self.lcd_freq.display(0)
         self.lcd_time.display(0)
 
 
     def init_experiment(self):
-        experimenter_name = self.txt_name.text()   
+        animal_name = self.txt_name.text()   
          
-        if not experimenter_name:
+        if not animal_name:
             QMessageBox.critical(self, "Error", "Please enter the experimenter's name")
             return
         
@@ -92,7 +92,7 @@ class Main(QMainWindow):
             QMessageBox.critical(self, "Error", "Please select the region of interest")
             return
 
-        folder_name = f"{experimenter_name}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        folder_name = f"{animal_name}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}"
         folder_path = os.path.join(os.getcwd(), "data", folder_name)
 
         try:
@@ -154,8 +154,8 @@ class Main(QMainWindow):
         self.disable_all_buttons()       
         self.worker = Worker(self.roi, images_folder_path= self.images_folder_path, images_save = self.chk_record.isChecked())
         self.worker_thread = QThread()
-        self.worker.num_imgs.connect(self.update_num_imgs)
-        self.worker.num_seconds.connect(self.update_num_seconds)
+        self.worker.frequency.connect(self.update_frequency)
+        self.worker.elapsed_time.connect(self.update_elapsed_time)
         self.worker.completed.connect(self.complete)
         self.work_requested.connect(self.worker.do_work)
         self.worker.moveToThread(self.worker_thread)
@@ -178,10 +178,10 @@ class Main(QMainWindow):
     def stop(self):     
         self.worker.set_running(False)
 
-    def update_num_imgs(self,n):
-        self.lcd_img.display(n)
+    def update_frequency(self,n):
+        self.lcd_freq.display(n)
 
-    def update_num_seconds(self,n):
+    def update_elapsed_time(self,n):
         self.lcd_time.display(n)
 
     def complete(self,v):

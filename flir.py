@@ -19,8 +19,8 @@ class ROI():
         self.ymax = roi[0] + roi[2]
 
 class Worker(QObject):
-    num_imgs = Signal(int)
-    num_seconds = Signal(int)
+    frequency = Signal(float)
+    elapsed_time = Signal(int)
     completed = Signal(bool)
     def __init__(self, roi:ROI, images_folder_path:str, images_save:bool=False, parent=None):
         self.image_acquisition = [{"images": [], "mean":[], "time": []},{"images": [], "mean":[], "time": []}, {"images": [], "mean":[], "time": []}]
@@ -46,18 +46,20 @@ class Worker(QObject):
             if i == 0:
                 self.t0 = datetime.datetime.now()
             channel = i%3       
+            seconds_elapsed = (datetime.datetime.now()-self.t0).total_seconds()
             self.image_acquisition[channel]["images"].append(img)
             self.image_acquisition[channel]["mean"].append(np.mean(img))
-            self.image_acquisition[channel]["time"].append(datetime.datetime.now())  
+            self.image_acquisition[channel]["time"].append(seconds_elapsed)  
             if self.image_save:        
                 folder_path = os.path.join(self.images_folder_path, f"chn{channel}")
                 if not os.path.exists(folder_path):
                     os.makedirs(folder_path)      
                 filename = os.path.join(folder_path, f"{datetime.datetime.now().strftime('%y-%m-%d_%H-%M-%S-%f')}.jpg")
                 imag = Image.fromarray(img)
-                Image.fromarray(img).save(filename)                
-            self.num_imgs.emit(i)             
-            self.num_seconds.emit((datetime.datetime.now()-self.t0).total_seconds())
+                Image.fromarray(img).save(filename)  
+            if  seconds_elapsed > 0:
+                self.elapsed_time.emit(seconds_elapsed)             
+                self.frequency.emit(float(i)/seconds_elapsed)             
             i+=1
 
         self.flir.end_acquisition()
