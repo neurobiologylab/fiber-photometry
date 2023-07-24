@@ -37,4 +37,4 @@ dependencies:
       - matplotlib==3.7.1
       - keyboard==0.13.5
       - seaborn
-      - .\packages\spinnaker_python-3.1.0.79-cp310-cp310-win_amd64.whl
+      - ..\packages\spinnaker_python-3.1.0.79-cp310-cp310-win_amd64.whl

@@ -22,4 +22,4 @@ dependencies:
       - matplotlib==3.4.2
       - keyboard==0.13.5
       - seaborn==0.12.2
-      - .\packages\spinnaker_python-2.4.0.144-cp38-cp38-win_amd64.whl
+      - ..\packages\spinnaker_python-2.4.0.144-cp38-cp38-win_amd64.whl
