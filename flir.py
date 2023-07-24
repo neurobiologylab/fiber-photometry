@@ -22,12 +22,13 @@ class Worker(QObject):
     frequency = Signal(float)
     elapsed_time = Signal(int)
     completed = Signal(bool)
-    def __init__(self, roi:ROI, images_folder_path:str, images_save:bool=False, parent=None):
+    def __init__(self, roi:ROI, images_folder_path:str, images_save:bool=False, exposure_time = 30000.0, parent=None):
         self.image_acquisition = [{"images": [], "mean":[], "time": []},{"images": [], "mean":[], "time": []}, {"images": [], "mean":[], "time": []}]
         self.roi = roi
         self.images_folder_path = images_folder_path
         self.image_save = images_save
         self.running = False
+        self.exposure_time = exposure_time
         self.t0 = 0
         super().__init__(parent)    
         
@@ -40,7 +41,7 @@ class Worker(QObject):
     def do_work(self):
         i = 0
         self.flir = FLIR()
-        status = (self.flir.init_acquisition()) and (self.flir.cam is not None)
+        status = (self.flir.init_acquisition(exposure_time=self.exposure_time)) and (self.flir.cam is not None)
         while self.running & status:
             img = self.flir.acquire_image()[self.roi.xmin:self.roi.xmax, self.roi.ymin:self.roi.ymax]
             if i == 0:
@@ -175,7 +176,7 @@ class FLIR():
 
 
 
-    def configure_exposure(self, exposure_time = 30000.0):
+    def configure_exposure(self, exposure_time = 30000.0): 
         print('*** CONFIGURING EXPOSURE ***\n')
 
         try:

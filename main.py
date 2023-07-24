@@ -152,7 +152,8 @@ class Main(QMainWindow):
             )
             return
         self.disable_all_buttons()       
-        self.worker = Worker(self.roi, images_folder_path= self.images_folder_path, images_save = self.chk_record.isChecked())
+        # Opt for a lower exposure time when a high image acquisition frequency is selected, to prevent motion blur and ensure adequate frame capture rate.
+        self.worker = Worker(self.roi, images_folder_path= self.images_folder_path, images_save = self.chk_record.isChecked(), exposure_time = 30000.0)
         self.worker_thread = QThread()
         self.worker.frequency.connect(self.update_frequency)
         self.worker.elapsed_time.connect(self.update_elapsed_time)
