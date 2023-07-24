@@ -1,6 +1,0 @@
-opencv-python-headless
-PySide2
-pyqtgraph
-PySpin
-nidaqmx
-qimage2ndarray
