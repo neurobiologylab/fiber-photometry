@@ -15,21 +15,21 @@ This repository contains code and documentation for a flexible and versatile sys
 
 |Company |  Name |  Catalog number |  Quatity |  Unit Size |  Price (USD) |  Link|
 |-------|-------|------|----------|------------|------------|------------|
- |  Thorlabs |  Adaptor |  SM1A3TS |  1 |  1 |  $25.41  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=SM1A3TS|
- |  Thorlabs​ |  Dichroic​ |  DMLP490R​ |  1​ |  1​ |  $273.69  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP490R|
- | SEMROCK |  Dichroic |  Di01-R405/488/594-25X36 |  1 |  1 |  $630  |  https://www.idex-hs.com/store/product-detail/di01_r405_488_594_25x36/fl-006958|
- |  Thorlabs |  Bandpass filter |  FBH410-10 |  1 |  1 |  $161.44  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=FBH410-10|
- |  Thorlabs |  Bandpass filter |  FBH470-10 |  1 |  1 |  $161.44  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=FBH470-10|
- |  Thorlabs |  Bandpass filter |  FBH510-10 |  1 |  1 |  $161.44  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=FBH510-10|
- |  Thorlabs |  Bandpass filter |  FBH590-10 |  1 |  1 |  $161.44  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=FBH590-10|
- |  Thorlabs |  End cap |  SM1CP2 |  4 |  1 |  81.08 |  https://www.thorlabs.com/thorproduct.cfm?partnumber=SM1CP2|
- |  Thorlabs |  Base adaptor |  BE1 |  4 |  1 |  43.32 |  https://www.thorlabs.com/thorproduct.cfm?partnumber=BE1#ad-image-0|
- |  Thorlabs |  Optical post |  TR1 |  4 |  1 |  21.52 |  https://www.thorlabs.com/thorproduct.cfm?partnumber=TR1|
- |  Thorlabs |  Adaptor |  AD11F |  1 |  1 |  33.19 |  https://www.thorlabs.com/thorproduct.cfm?partnumber=AD11F|
+ |  Thorlabs |  Adaptor |  SM1A3TS |  1 |  1 |  $25.41  |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=SM1A3TS)|
+ |  Thorlabs​ |  Dichroic​ |  DMLP490R​ |  1​ |  1​ |  $273.69  |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=DMLP490R)|
+ | SEMROCK |  Dichroic |  Di01-R405/488/594-25X36 |  1 |  1 |  $630  |  [url](www.idex-hs.com/store/product-detail/di01_r405_488_594_25x36/fl-006958)|
+ |  Thorlabs |  Bandpass filter |  FBH410-10 |  1 |  1 |  $161.44  |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=FBH410-10)|
+ |  Thorlabs |  Bandpass filter |  FBH470-10 |  1 |  1 |  $161.44  |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=FBH470-10)|
+ |  Thorlabs |  Bandpass filter |  FBH510-10 |  1 |  1 |  $161.44  |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=FBH510-10)|
+ |  Thorlabs |  Bandpass filter |  FBH590-10 |  1 |  1 |  $161.44  |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=FBH590-10)|
+ |  Thorlabs |  End cap |  SM1CP2 |  4 |  1 |  81.08 |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=SM1CP2)|
+ |  Thorlabs |  Base adaptor |  BE1 |  4 |  1 |  43.32 |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=BE1#ad-image-0)|
+ |  Thorlabs |  Optical post |  TR1 |  4 |  1 |  21.52 |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=TR1)|
+ |  Thorlabs |  Adaptor |  AD11F |  1 |  1 |  33.19 |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=AD11F)|
  |  Thorlabs |  Thread Adapters |  AE8E25E |  4 |  1 |  19.48 |  |
- |  Thorlabs |  Adaptor |  AD11F |  1 |  1 |  33.19 |  https://www.thorlabs.com/thorproduct.cfm?partnumber=AD11F |
- |  Thorlabs |  Extension Rod |  ER05 |  4 |  1 |  $22.40  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=ER05 |
- |  Thorlabs​ |  Fiber collimation |  F671SMA-405 |  1 |  1 |  $117.45  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=F671SMA-405 |
+ |  Thorlabs |  Adaptor |  AD11F |  1 |  1 |  33.19 |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=AD11F)|
+ |  Thorlabs |  Extension Rod |  ER05 |  4 |  1 |  $22.40  |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=ER05) |
+ |  Thorlabs​ |  Fiber collimation |  F671SMA-405 |  1 |  1 |  $117.45  |  [url](www.thorlabs.com/thorproduct.cfm?partnumber=F671SMA-405) |
 
 <!-- To order parts and set up hardware, see the parts list below: 
 
