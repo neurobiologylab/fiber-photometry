@@ -62,71 +62,94 @@ This repository contains code and documentation for a flexible and versatile sys
 | ADAL1-5     | Ceramic Split Mating Sleeves for Ø1.25 mm (LC/PC) Ferrules, 5 Pack                                        | -    | 10       | $20.96     | $209.60    |
 | ADAF1-5     | Ceramic Split Mating Sleeves for Ø2.5 mm (FC/PC, ST/PC, or SC/PC) Ferrules, 5 Pack                          | -    | 10       | $23.27     | $232.70    | -->
 
+## Install NI Equipments
+
+1. 
+
+
+
 ## Labview Application
 
 https://forums.ni.com/t5/Example-Code/Generate-Multiple-Channels-of-Digital-Output-with-Different/ta-p/3512729
 
-
-1. Create a blank VI by clicking on the block diagram (blank white background without grid), and right-click to open the functions palette: Measurement I/O > Daqmx data acquisition > daq assistant.
-
-   <img src="./imgs/labview_DAQ_Assistant.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
-
-2. Choose "Generate Signal" and "Analog Output Voltage" in the DAQ assistant.
-
-   <img src="./imgs/labview_DAQ_analog_input.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
-
-3. Verify that AO 0 through AO 3 are selected channels.
-
-   <img src="./imgs/labview_DAQ_channels.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
-
-4. Click "OK" and wait for the VI to build (this may take a few seconds).
-
-   <img src="./imgs/labview_DAQ_ok.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
-
-5. Open the `glynnfip.vi` file.
+1. Open the LabView app `fip-trigger.vi` under the labview folder.
 
    <img src="./imgs/labview_Glynnfip.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
-6. Configure the settings for the `glynnfip.vi`.
-
-   <img src="./imgs/labview_Glynnfip_setting.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
-
-7. Click the "Run" button to start the execution.
+2. Click the "Run" button to start the execution.
 
 ## Important Notes
 
 Before initiating each experiment, it is crucial to follow these steps in the specified order to ensure proper synchronization of the recording process:
 
-1. Run the Python app first and then launch the LabView app.
+1. Run the Python app first and then Run the LabView app.
 2. Make sure to perform the following steps before starting a new experiment (recording):
 
-   a. Move all images in the "data/images" folder under the Python app to a separate location designated for storing the experiment data. Ensure that the "data/images" folder is empty.
+   b. Click the "Stop" button in the `fip-trigger.vi` app to halt the data acquisition.
    
-   b. Click the "Stop" button in the `glynnfip.vi` app to halt the data acquisition.
+   c. Set all offsets and amplitudes to 0 within the `fip-trigger.vi` app.
    
-   c. Set all offsets and amplitudes to 0 within the `glynnfip.vi` app.
+   d. Run the `fip-trigger.vi` app for a brief period and then stop it. This step is essential for reinitializing the `fip-trigger.vi` app to its original state.
    
-   d. Run the `glynnfip.vi` app for a brief period and then stop it. This step is essential for reinitializing the `glynnfip.vi` app to its original state.
+   e. After reinitializing the `fip-trigger.vi` app, set all offsets and amplitudes to 2.5.
    
-   e. After reinitializing the `glynnfip.vi` app, set all offsets and amplitudes to 2.5.
-   
-3. Start the Python app by following steps 1 to 4 for the recording process.
-4. Click the "Run" button in the `glynnfip.vi` window to initiate data acquisition.
-
-Please note that if the window for selecting the region of interest appears too small and prevents you from performing any actions (due to a potential bug in the OpenCV package), you can try the following:
-
-1. Press the spacebar on your keyboard to trigger a response.
-2. Click the "Submit" button.
-3. Reclick to choose the desired region of interest.
-
-If the issue persists, consider closing and restarting the Python app or restarting your machine as possible solutions.
+3. Initialize a new experiment in the Python app and start ploting.
+4. Click the "Run" button in the `fip-trigger.vi` window to initiate data acquisition.
 
 ## Python Applicaton 
 
-### Build Environment 
+### Clone the Repository
+Open a Git terminal and download the project repository using following command line.
 
-### Python App
-1. Open the repository and execute the `main.py` script.
+   ```
+   git clone git@github.com:neurobiologylab/fiber-photometry.git
+   ```
+
+### Build Environment 
+#### 1. Download Anaconda:
+Anaconda is a free and open-source distribution of Python and R, primarily used for scientific computing. It simplifies package management and deployment. You can download and install Anaconda from [here](https://www.anaconda.com).
+
+   <!-- <img src="./imgs/anaconda_download.jpg" alt="download anaconda" width="500" style="border: 1px solid black;"> -->
+
+#### 4. Launch Anaconda Navigator:
+
+Start the Anaconda Navigator application.
+
+#### 5. Launch CMD.exe Prompt:
+
+In the Anaconda Navigator, launch the "CMD.exe Prompt" which will open a new command prompt window.
+
+   <img src="./imgs/anaconda_navigator.jpg" alt="anaconda navigator" width="500" style="border: 1px solid black;">
+
+#### 6. Navigate to the Workspace:
+
+In the command prompt window, navigate to your directory where you cloned the fiber-photometry repository. For example, if your "fiber-photometry" folder is in the root of the C drive, you would type:
+
+   ```
+   cd C:\your_workspace_directory\fiber-photometry
+   ```
+
+#### 7. Create the Conda Environment:
+
+In the "fiber-photometry" directory, create a packages folder and put the spinnaker_python-2.4.0.144-cp38-cp38-win_amd64.whl under this folder, then use the `photometry2.4.yaml` file to create a new Conda environment:
+
+   ```
+   conda env create -f ./env/photometry2.4.yaml
+   ```
+
+   <img src="./imgs/create_environment.jpg" alt="create environment" width="500" style="border: 1px solid black;">
+
+
+
+
+#### 8. Activate the New Environment:
+in the Anaconda Navigator, select the photometry 2.4 environment and then launch the Visual Studio Code. 
+
+
+#### 8. Run Ptyhon App:
+open the fiber-photometry folder using Visual Studio Code and:
+
+1. execute the `main.py` script. 
 2. Click on "New" to specify the folder for data storage.
 3. Select "Set Parameters" to choose the region of interest.
 4. Click on "Plot" and "Record" to start recording.
