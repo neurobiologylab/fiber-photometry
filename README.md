@@ -142,9 +142,11 @@ open the fiber-photometry folder using Visual Studio Code and:
 
 1. execute the `main.py` script. 
 2. enter the experimental animal's ID.
+
    <img src="./imgs/fill_id.jpg"  width="500" style="border: 1px solid black;">
 
 3. Click the "Select the Region of Interest" button to choose the region of interest, and then click the button "New Experiment Initilization" to initialize a new experiment.
+
    <img src="./imgs/roi.jpg" width="500" style="border: 1px solid black;">
 
    
@@ -155,9 +157,10 @@ open the fiber-photometry folder using Visual Studio Code and:
    <img src="./imgs/plot.jpg" width="500" style="border: 1px solid black;">
 
 5. Click the "Stop & Save Experiment Data" to finish current experiment, 
+
    <img src="./imgs/save.jpg" width="500" style="border: 1px solid black;">
 
-6. Fill the experimental animal's ID and then click "New Experiment Initilization" to initialize a next experiment.
+6. Fill the experimental animal's ID and then click "New Experiment Initilization" to initialize start next experiment.
 
 
 ## Contributing
