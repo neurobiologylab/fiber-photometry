@@ -27,9 +27,9 @@ This repository contains code and documentation for a flexible and versatile sys
  |  Thorlabs |  Optical post |  TR1 |  4 |  1 |  21.52 |  https://www.thorlabs.com/thorproduct.cfm?partnumber=TR1|
  |  Thorlabs |  Adaptor |  AD11F |  1 |  1 |  33.19 |  https://www.thorlabs.com/thorproduct.cfm?partnumber=AD11F|
  |  Thorlabs |  Thread Adapters |  AE8E25E |  4 |  1 |  19.48 |  |
-
-
-
+ |  Thorlabs |  Adaptor |  AD11F |  1 |  1 |  33.19 |  https://www.thorlabs.com/thorproduct.cfm?partnumber=AD11F |
+ |  Thorlabs |  Extension Rod |  ER05 |  4 |  1 |  $22.40  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=ER05 |
+ |  Thorlabs​ |  Fiber collimation |  F671SMA-405 |  1 |  1 |  $117.45  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=F671SMA-405 |
 
 <!-- To order parts and set up hardware, see the parts list below: 
 
