@@ -13,7 +13,7 @@ This repository contains code and documentation for a flexible and versatile sys
 ### Purchasing List
 
 
-Company |  Name |  Catalog number |  Quatity |  Unit Size |  Price (USD) |  Link|
+|Company |  Name |  Catalog number |  Quatity |  Unit Size |  Price (USD) |  Link|
 |-------|-------|------|----------|------------|------------|------------|
  |  Thorlabs |  Adaptor |  SM1A3TS |  1 |  1 |  $25.41  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=SM1A3TS|
  |  Thorlabs​ |  Dichroic​ |  DMLP490R​ |  1​ |  1​ |  $273.69  |  https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP490R|
