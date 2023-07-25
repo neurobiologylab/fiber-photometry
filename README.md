@@ -62,19 +62,24 @@ This repository contains code and documentation for a flexible and versatile sys
 | ADAL1-5     | Ceramic Split Mating Sleeves for Ø1.25 mm (LC/PC) Ferrules, 5 Pack                                        | -    | 10       | $20.96     | $209.60    |
 | ADAF1-5     | Ceramic Split Mating Sleeves for Ø2.5 mm (FC/PC, ST/PC, or SC/PC) Ferrules, 5 Pack                          | -    | 10       | $23.27     | $232.70    | -->
 
+## Clone the Repository
+Open a Git terminal and download the project repository using following command line.
+
+   ```
+   git clone git@github.com:neurobiologylab/fiber-photometry.git
+   ```
+
 ## Install NI Equipments
 
-1. 
-
-
+install the PCIe-6343 card, and then download and install the driver 2022 Q3 version from [here](https://www.ni.com/en-us/support/downloads/drivers/download.ni-daq-mx.html#460239) 
 
 ## Labview Application
 
-https://forums.ni.com/t5/Example-Code/Generate-Multiple-Channels-of-Digital-Output-with-Different/ta-p/3512729
+1. Install the LabView 2022
 
 1. Open the LabView app `fip-trigger.vi` under the labview folder.
 
-   <img src="./imgs/labview_Glynnfip.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/fip-trigger.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
 
 2. Click the "Run" button to start the execution.
 
@@ -98,18 +103,11 @@ Before initiating each experiment, it is crucial to follow these steps in the sp
 
 ## Python Applicaton 
 
-### Clone the Repository
-Open a Git terminal and download the project repository using following command line.
-
-   ```
-   git clone git@github.com:neurobiologylab/fiber-photometry.git
-   ```
-
 ### Build Environment 
 #### 1. Download Anaconda:
 Anaconda is a free and open-source distribution of Python and R, primarily used for scientific computing. It simplifies package management and deployment. You can download and install Anaconda from [here](https://www.anaconda.com).
 
-   <!-- <img src="./imgs/anaconda_download.jpg" alt="download anaconda" width="500" style="border: 1px solid black;"> -->
+   <img src="./imgs/anaconda_download.jpg" alt="download anaconda" width="500" style="border: 1px solid black;">
 
 #### 4. Launch Anaconda Navigator:
 
@@ -136,11 +134,6 @@ In the "fiber-photometry" directory, create a packages folder and put the spinna
    ```
    conda env create -f ./env/photometry2.4.yaml
    ```
-
-   <img src="./imgs/create_environment.jpg" alt="create environment" width="500" style="border: 1px solid black;">
-
-
-
 
 #### 8. Activate the New Environment:
 in the Anaconda Navigator, select the photometry 2.4 environment and then launch the Visual Studio Code. 
