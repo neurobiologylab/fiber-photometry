@@ -79,7 +79,7 @@ install the PCIe-6343 card, and then download and install the driver 2022 Q3 ver
 
 1. Open the LabView app `fip-trigger.vi` under the labview folder.
 
-   <img src="./imgs/fip-trigger.jpg" alt="LabView Glynnfip" width="500" style="border: 1px solid black;">
+   <img src="./imgs/fip-trigger.jpg" alt="LabView Glynnfip" width="700" style="border: 1px solid black;">
 
 2. Click the "Run" button to start the execution.
 
@@ -109,11 +109,9 @@ Anaconda is a free and open-source distribution of Python and R, primarily used 
 
    <img src="./imgs/anaconda_download.jpg" alt="download anaconda" width="500" style="border: 1px solid black;">
 
-#### 4. Launch Anaconda Navigator:
+#### 4. Launch Anaconda Navigator and Launch CMD.exe Prompt:
 
 Start the Anaconda Navigator application.
-
-#### 5. Launch CMD.exe Prompt:
 
 In the Anaconda Navigator, launch the "CMD.exe Prompt" which will open a new command prompt window.
 
@@ -143,9 +141,23 @@ in the Anaconda Navigator, select the photometry 2.4 environment and then launch
 open the fiber-photometry folder using Visual Studio Code and:
 
 1. execute the `main.py` script. 
-2. Click on "New" to specify the folder for data storage.
-3. Select "Set Parameters" to choose the region of interest.
-4. Click on "Plot" and "Record" to start recording.
+2. enter the experimental animal's ID.
+   <img src="./imgs/fill_id.jpg"  width="500" style="border: 1px solid black;">
+
+3. Click the "Select the Region of Interest" button to choose the region of interest, and then click the button "New Experiment Initilization" to initialize a new experiment.
+   <img src="./imgs/roi.jpg" width="500" style="border: 1px solid black;">
+
+   
+   <img src="./imgs/new.jpg" width="500" style="border: 1px solid black;">
+
+4. Chick the "Save Imgs" to save the images (optional), Click on "Plot" to start recording.
+
+   <img src="./imgs/plot.jpg" width="500" style="border: 1px solid black;">
+
+5. Click the "Stop & Save Experiment Data" to finish current experiment, 
+   <img src="./imgs/save.jpg" width="500" style="border: 1px solid black;">
+
+6. Fill the experimental animal's ID and then click "New Experiment Initilization" to initialize a next experiment.
 
 
 ## Contributing
