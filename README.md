@@ -83,7 +83,15 @@ This repository contains code and documentation for a flexible and versatile sys
 | ADAF1-5     | Ceramic Split Mating Sleeves for Ø2.5 mm (FC/PC, ST/PC, or SC/PC) Ferrules, 5 Pack                          | -    | 10       | $23.27     | $232.70    | -->
 
 ## Clone the Repository
-Open a Git terminal and download the project repository using following command line.
+1. Open a Git terminal and create your ssh key using following command line.
+
+   ```
+   ssh-keygen
+   ```
+
+2. log in your github account and go to the settings-->"SSH and GPG keys" and click the "New SSH key" button, copy and paste the public key and click "Add SSH key"
+
+3. set the user name and email on the local machine. download the project repository using following command line.
 
    ```
    git clone git@github.com:neurobiologylab/fiber-photometry.git
