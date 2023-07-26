@@ -83,15 +83,23 @@ This repository contains code and documentation for a flexible and versatile sys
 | ADAF1-5     | Ceramic Split Mating Sleeves for Ø2.5 mm (FC/PC, ST/PC, or SC/PC) Ferrules, 5 Pack                          | -    | 10       | $23.27     | $232.70    | -->
 
 ## Clone the Repository
-1. Open a Git terminal and create your ssh key using following command line.
+1. Open a Git terminal. If you haven't yet configured an SSH key for GitHub on your machine, generate a new one with the following command:
 
    ```
    ssh-keygen
    ```
 
-2. log in your github account and go to the settings-->"SSH and GPG keys" and click the "New SSH key" button, copy and paste the public key and click "Add SSH key"
+2. Navigate to your GitHub account settings. Click on "SSH and GPG keys" and then "New SSH key". Paste the public key that was generated in the first step and click "Add SSH key".
 
-3. set the user name and email on the local machine. download the project repository using following command line.
+3. Set up your GitHub username and email on your local machine. You can do this with the following commands:
+
+   ```
+   git config --global user.name "Your Name"
+   git config --global user.email "your-email@example.com"
+
+   ```
+
+4. Now you're ready to clone the repository. In your Git terminal, enter the following command to download the repository to your local machine:
 
    ```
    git clone git@github.com:neurobiologylab/fiber-photometry.git
@@ -99,17 +107,78 @@ This repository contains code and documentation for a flexible and versatile sys
 
 ## Install NI Equipments
 
-install the PCIe-6343 card, and then download and install the driver 2022 Q3 version from [here](https://www.ni.com/en-us/support/downloads/drivers/download.ni-daq-mx.html#460239) 
+Install the PCIe-6343 card, then download and install the driver 2022 Q3 version from [here](https://www.ni.com/en-us/support/downloads/drivers/download.ni-daq-mx.html#460239) 
 
 ## Labview Application
 
-1. Install the LabView 2022
+1. Install LabView 2022.
 
-1. Open the LabView app `fip-trigger.vi` under the labview folder.
+2. Open the LabView application fip-trigger.vi located in the 'labview' folder of the cloned repository.
 
    <img src="./imgs/fip-trigger.jpg" alt="LabView Glynnfip" width="700" style="border: 1px solid black;">
 
-2. Click the "Run" button to start the execution.
+3. Click the "Run" button to start executing the LabView application.
+
+## Python Applicaton 
+
+### Build Environment 
+#### 1. Download Anaconda:
+Anaconda is a free and open-source distribution of Python and R, primarily used for scientific computing. It simplifies package management and deployment. You can download and install Anaconda from [here](https://www.anaconda.com).
+
+   <img src="./imgs/anaconda_download.jpg" alt="download anaconda" width="500" style="border: 1px solid black;">
+
+#### 2. Launch Anaconda Navigator and Launch CMD.exe Prompt:
+
+Start the Anaconda Navigator application.
+
+In the Anaconda Navigator, launch the "CMD.exe Prompt" which will open a new command prompt window.
+
+   <img src="./imgs/anaconda_navigator.jpg" alt="anaconda navigator" width="500" style="border: 1px solid black;">
+
+#### 3. Navigate to the Workspace:
+
+In the command prompt window, navigate to the directory where you cloned the fiber-photometry repository. For example, if your "fiber-photometry" folder is in the root of the C drive, type:
+
+   ```
+   cd C:\fiber-photometry
+   ```
+
+#### 4. Create the Conda Environment:
+
+In the "fiber-photometry" directory, create a 'packages' folder and move the 'spinnaker_python-2.4.0.144-cp38-cp38-win_amd64.whl' file into it. Then use the photometry2.4.yaml file under the env folder to create a new Conda environment:
+
+   ```
+   conda env create -f ./env/photometry2.4.yaml
+   ```
+
+#### 5. Activate the New Environment:
+In Anaconda Navigator, select the photometry 2.4 environment and then launch Visual Studio Code.
+
+#### 8. Run Ptyhon App:
+Open the fiber-photometry folder using Visual Studio Code and perform the following:
+
+1. Execute the `main.py` script. 
+2. Enter the experimental animal's ID.
+
+   <img src="./imgs/fill_id.jpg"  width="500" style="border: 1px solid black;">
+
+3. Click the "Select the Region of Interest" button to define the region of interest, then click the "New Experiment Initialization" button to set up a new experiment.
+
+   <img src="./imgs/roi.jpg" width="500" style="border: 1px solid black;">
+
+   
+   <img src="./imgs/new.jpg" width="500" style="border: 1px solid black;">
+
+4. Check the "Save Imgs" box if you want to save images (optional), then click on "Plot" to start recording.
+
+   <img src="./imgs/plot.jpg" width="500" style="border: 1px solid black;">
+
+5. Click the "Stop & Save Experiment Data" button to conclude the current experiment.
+
+   <img src="./imgs/save.jpg" width="500" style="border: 1px solid black;">
+
+6. Enter the experimental animal's ID and then click "New Experiment Initialization" to start the next experiment.
+
 
 ## Important Notes
 
@@ -128,68 +197,6 @@ Before initiating each experiment, it is crucial to follow these steps in the sp
    
 3. Initialize a new experiment in the Python app and start ploting.
 4. Click the "Run" button in the `fip-trigger.vi` window to initiate data acquisition.
-
-## Python Applicaton 
-
-### Build Environment 
-#### 1. Download Anaconda:
-Anaconda is a free and open-source distribution of Python and R, primarily used for scientific computing. It simplifies package management and deployment. You can download and install Anaconda from [here](https://www.anaconda.com).
-
-   <img src="./imgs/anaconda_download.jpg" alt="download anaconda" width="500" style="border: 1px solid black;">
-
-#### 4. Launch Anaconda Navigator and Launch CMD.exe Prompt:
-
-Start the Anaconda Navigator application.
-
-In the Anaconda Navigator, launch the "CMD.exe Prompt" which will open a new command prompt window.
-
-   <img src="./imgs/anaconda_navigator.jpg" alt="anaconda navigator" width="500" style="border: 1px solid black;">
-
-#### 6. Navigate to the Workspace:
-
-In the command prompt window, navigate to your directory where you cloned the fiber-photometry repository. For example, if your "fiber-photometry" folder is in the root of the C drive, you would type:
-
-   ```
-   cd C:\your_workspace_directory\fiber-photometry
-   ```
-
-#### 7. Create the Conda Environment:
-
-In the "fiber-photometry" directory, create a packages folder and put the spinnaker_python-2.4.0.144-cp38-cp38-win_amd64.whl under this folder, then use the `photometry2.4.yaml` file to create a new Conda environment:
-
-   ```
-   conda env create -f ./env/photometry2.4.yaml
-   ```
-
-#### 8. Activate the New Environment:
-in the Anaconda Navigator, select the photometry 2.4 environment and then launch the Visual Studio Code. 
-
-
-#### 8. Run Ptyhon App:
-open the fiber-photometry folder using Visual Studio Code and:
-
-1. execute the `main.py` script. 
-2. enter the experimental animal's ID.
-
-   <img src="./imgs/fill_id.jpg"  width="500" style="border: 1px solid black;">
-
-3. Click the "Select the Region of Interest" button to choose the region of interest, and then click the button "New Experiment Initilization" to initialize a new experiment.
-
-   <img src="./imgs/roi.jpg" width="500" style="border: 1px solid black;">
-
-   
-   <img src="./imgs/new.jpg" width="500" style="border: 1px solid black;">
-
-4. Chick the "Save Imgs" to save the images (optional), Click on "Plot" to start recording.
-
-   <img src="./imgs/plot.jpg" width="500" style="border: 1px solid black;">
-
-5. Click the "Stop & Save Experiment Data" to finish current experiment, 
-
-   <img src="./imgs/save.jpg" width="500" style="border: 1px solid black;">
-
-6. Fill the experimental animal's ID and then click "New Experiment Initilization" to initialize start next experiment.
-
 
 ## Contributing
 
