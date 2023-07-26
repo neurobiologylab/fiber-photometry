@@ -198,6 +198,28 @@ Before initiating each experiment, it is crucial to follow these steps in the sp
 3. Initialize a new experiment in the Python app and start ploting.
 4. Click the "Run" button in the `fip-trigger.vi` window to initiate data acquisition.
 
+## Jupyter Notebook
+
+1. Start the Anaconda Navigator.
+
+Launch the Anaconda Navigator on your system. Within the Anaconda Navigator interface, install (if not already installed) and launch "Jupyter Notebook". This will open a new tab in your default web browser with the Jupyter Notebook file explorer.
+
+   <img src="./imgs/jupyter.jpg" alt="anaconda navigator" width="500" style="border: 1px solid black;">
+
+2. Open the Notebook:
+
+In the Jupyter Notebook file explorer tab in your browser, navigate to the directory where you cloned the fiber-photometry repository. Find and open the "photometry_data_processing.ipynb" file.
+
+   <img src="./imgs/notebook.jpg" alt="anaconda navigator" width="500" style="border: 1px solid black;">
+
+3. Run the Notebook:
+
+With the "photometry_data_processing.ipynb" file open, locate the cell with the path to the data file. Replace this with the correct path to the data file you wish to analyze. After updating the path, run the code in the notebook by selecting the cell and pressing 'Shift' + 'Enter'. This will execute the cell and output the results beneath it.
+
+   <img src="./imgs/data--analysis.jpg" alt="anaconda navigator" width="500" style="border: 1px solid black;">
+
+
+
 ## Contributing
 
 Contributions to this project are welcome and encouraged. To contribute, please follow these steps:
