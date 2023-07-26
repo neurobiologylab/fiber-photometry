@@ -12,7 +12,7 @@ This repository contains code and documentation for a flexible and versatile sys
 ## System Setup
 ### Purchasing List
 
-|Company |  Name |  Catalog number |  Quatity |  Unit Size |  Price (USD) |
+|Company |  Name |  Catalog Number |  Quatity |  Unit Size |  Price (USD) |
 |-------|-------|------|----------|------------|------------|
 |  Thorlabs |  Adaptor |  [SM1A3TS](https://www.thorlabs.com/thorproduct.cfm?partnumber=SM1A3TS) |  1 |  1 |  \$25.41  |
 |  Thorlabs|  Dichroic|  [DMLP490R](https://www.thorlabs.com/thorproduct.cfm?partnumber=DMLP490R)|  1|  1|  \$273.69  |
@@ -21,12 +21,12 @@ This repository contains code and documentation for a flexible and versatile sys
 |  Thorlabs |  Bandpass filter |  [FBH470-10](https://www.thorlabs.com/thorproduct.cfm?partnumber=FBH470-10) |  1 |  1 |  \$161.44  |
 |  Thorlabs |  Bandpass filter |  [FBH510-10](https://www.thorlabs.com/thorproduct.cfm?partnumber=FBH510-10) |  1 |  1 |  \$161.44  |
 |  Thorlabs |  Bandpass filter |  [FBH590-10](https://www.thorlabs.com/thorproduct.cfm?partnumber=FBH590-10) |  1 |  1 |  \$161.44  |
-|  Thorlabs |  End cap |  [SM1CP2](https://www.thorlabs.com/thorproduct.cfm?partnumber=SM1CP2) |  4 |  1 |  81.08 |
-|  Thorlabs |  Base adaptor |  [BE1](https://www.thorlabs.com/thorproduct.cfm?partnumber=BE1#ad-image-0) |  4 |  1 |  43.32 |
-|  Thorlabs |  Optical post |  [TR1](https://www.thorlabs.com/thorproduct.cfm?partnumber=TR1) |  4 |  1 |  21.52 |
-|  Thorlabs |  Adaptor |  [AD11F](https://www.thorlabs.com/thorproduct.cfm?partnumber=AD11F) |  1 |  1 |  33.19 |
-|  Thorlabs |  Thread Adapters |  [AE8E25E](https://www.thorlabs.com/thorproduct.cfm?partnumber=AE8E25E) |  4 |  1 |  19.48 |
-|  Thorlabs |  Adaptor |  [AD11F](https://www.thorlabs.com/thorproduct.cfm?partnumber=AD11F) |  1 |  1 |  33.19 |
+|  Thorlabs |  End cap |  [SM1CP2](https://www.thorlabs.com/thorproduct.cfm?partnumber=SM1CP2) |  4 |  1 |  \$81.08 |
+|  Thorlabs |  Base adaptor |  [BE1](https://www.thorlabs.com/thorproduct.cfm?partnumber=BE1#ad-image-0) |  4 |  1 |  \$43.32 |
+|  Thorlabs |  Optical post |  [TR1](https://www.thorlabs.com/thorproduct.cfm?partnumber=TR1) |  4 |  1 |  \$21.52 |
+|  Thorlabs |  Adaptor |  [AD11F](https://www.thorlabs.com/thorproduct.cfm?partnumber=AD11F) |  1 |  1 |  \$33.19 |
+|  Thorlabs |  Thread Adapters |  [AE8E25E](https://www.thorlabs.com/thorproduct.cfm?partnumber=AE8E25E) |  4 |  1 |  \$19.48 |
+|  Thorlabs |  Adaptor |  [AD11F](https://www.thorlabs.com/thorproduct.cfm?partnumber=AD11F) |  1 |  1 |  \$33.19 |
 |  Thorlabs |  Extension Rod |  [ER05](https://www.thorlabs.com/thorproduct.cfm?partnumber=ER05) |  4 |  1 |  \$22.40  |
 |  Thorlabs|  Fiber collimation |  [F671SMA-405](https://www.thorlabs.com/thorproduct.cfm?partnumber=F671SMA-405) |  1 |  1 |  \$117.45  |
 
