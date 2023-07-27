@@ -24,7 +24,7 @@ from widget import MyMplCanvas
 connector 0: ao0 camera, ao1 405 (on labview channels 1,2) 
 connector 1: ao0 470, ao1 625 (on labview channels 3,4)
 '''
-
+#test
 class Main(QMainWindow):
     work_requested = Signal()  
     def __init__(self, parent=None):
