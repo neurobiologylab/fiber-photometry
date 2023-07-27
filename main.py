@@ -9,7 +9,7 @@ from PySide2.QtWidgets import (
     QMessageBox, QLabel, QLineEdit, QCheckBox, QLCDNumber
 )
 from main_ui import MainUI
-import os
+import sys
 import cv2
 import pandas as pd
 import datetime
